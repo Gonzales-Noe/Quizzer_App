@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Quizzer">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="description" content="Quizzer - Technopreneurship Prelim Review Quiz">
+<meta name="description" content="Quizzer - reusable reviewer quizzes">
 <title>Quizzer</title>
 <link rel="icon" id="favicon" href="">
 <link rel="apple-touch-icon" id="apple-icon" href="">
@@ -19,23 +19,27 @@
   --correct:#22c55e;--wrong:#ef4444;--text:#f1f5f9;--muted:#94a3b8;--border:#334155;
   --safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px);
 }
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);
+html,body{height:100%;width:100%;overflow:hidden;overscroll-behavior:none;position:fixed;inset:0;background:var(--bg);color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   -webkit-tap-highlight-color:transparent;user-select:none;touch-action:manipulation}
-#app{height:100dvh;display:flex;flex-direction:column;padding:var(--safe-t) 0 var(--safe-b);overflow:hidden}
-.screen{display:none;flex:1;flex-direction:column;overflow:hidden;padding:clamp(8px,2vw,16px);min-height:0}
+#app{height:100%;height:100dvh;max-height:100dvh;display:flex;flex-direction:column;padding:var(--safe-t) 0 var(--safe-b);overflow:hidden;overscroll-behavior:none}
+.screen{display:none;flex:1;flex-direction:column;overflow:hidden;overscroll-behavior:none;padding:clamp(8px,2vw,16px);min-height:0;height:100%;max-height:100%}
 .screen.active{display:flex}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0;padding-bottom:clamp(4px,1vh,8px)}
-.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:clamp(14px,3.5vw,18px)}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:clamp(14px,3.5vw,18px);min-width:0}
+#quiz-brand{max-width:clamp(72px,22vw,140px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .logo-icon{width:clamp(28px,7vw,36px);height:clamp(28px,7vw,36px);background:var(--accent);border-radius:8px;
   display:flex;align-items:center;justify-content:center;font-weight:800;font-size:clamp(16px,4vw,22px);color:#fff}
 .progress-wrap{flex:1;max-width:140px}
 .progress-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
 .progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s}
 .counter{font-size:clamp(11px,2.8vw,13px);color:var(--muted);white-space:nowrap}
+.quiz-pack-meta{flex-shrink:0;margin:0 0 clamp(6px,1.2vh,10px);min-width:0}
+.quiz-pack-title{font-size:clamp(13px,3.3vw,16px);font-weight:700;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quiz-pack-file{font-size:clamp(10px,2.5vw,12px);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
 .type-badge{display:inline-block;font-size:clamp(9px,2.2vw,11px);padding:2px 8px;border-radius:99px;
   background:rgba(99,102,241,.2);color:var(--accent2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;
-  margin-bottom:clamp(10px,2.5vh,16px);flex-shrink:0}
+  margin-bottom:clamp(8px,2vh,12px);flex-shrink:0}
 .topbar-right{display:flex;align-items:center;gap:clamp(4px,1vw,8px);flex-shrink:0}
 .icon-btn{width:clamp(28px,7vw,34px);height:clamp(28px,7vw,34px);border:1px solid var(--border);border-radius:8px;
   background:var(--card);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;
@@ -70,12 +74,14 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);
 .btn-primary{background:var(--accent);color:#fff}
 .btn-primary:disabled{opacity:.4;cursor:not-allowed}
 .btn-secondary{background:var(--card);color:var(--text);border:1px solid var(--border)}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
 .btn:active:not(:disabled){transform:scale(.97)}
-#start-screen,#results-screen{padding:0}
-.start-layout,.results-layout{flex:1;display:flex;flex-direction:column;min-height:0;width:100%}
+#start-screen,#results-screen,#picker-screen{padding:0}
+.start-layout,.results-layout,.lib-layout{flex:1;display:flex;flex-direction:column;min-height:0;height:100%;max-height:100%;width:100%;overflow:hidden}
 .start-content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:clamp(8px,2vh,16px);padding:clamp(12px,3vw,20px) clamp(12px,3vw,20px) clamp(8px,2vh,12px);overflow-y:auto}
-.start-bottom,.results-bottom{flex-shrink:0;padding:clamp(10px,2.5vh,16px) clamp(12px,3vw,20px) calc(clamp(10px,2.5vh,16px) + var(--safe-b));border-top:1px solid var(--border);background:var(--surface);display:flex;justify-content:center}
-.start-bottom .btn-start,.results-bottom .btn-retry{max-width:200px;width:100%;padding:clamp(10px,2vh,12px);font-size:clamp(11px,2.8vw,14px)}
+.start-bottom,.results-bottom,.lib-bottom{flex-shrink:0;padding:clamp(10px,2.5vh,16px) clamp(12px,3vw,20px) calc(clamp(10px,2.5vh,16px) + var(--safe-b));border-top:1px solid var(--border);background:var(--surface);display:flex;justify-content:center;gap:8px}
+.start-bottom .btn-start,.results-bottom .btn-retry,.lib-bottom .btn{max-width:220px;width:100%;padding:clamp(10px,2vh,12px);font-size:clamp(11px,2.8vw,14px)}
+.results-bottom .btn-retry,.results-bottom .btn{max-width:160px}
 .start-icon{width:clamp(64px,18vw,96px);height:clamp(64px,18vw,96px);background:var(--accent);border-radius:20px;
   display:flex;align-items:center;justify-content:center;font-size:clamp(36px,10vw,56px);font-weight:800;color:#fff;
   box-shadow:0 8px 32px rgba(99,102,241,.4)}
@@ -88,17 +94,30 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);
 .install-ui.hidden{display:none!important}
 .install-hint{font-size:clamp(10px,2.5vw,12px);color:var(--muted);padding:8px;border-radius:8px;background:var(--surface);max-width:300px;line-height:1.3;text-align:center}
 .install-start-btn{max-width:280px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px}
-.install-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
+.install-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1100;display:none;align-items:center;justify-content:center;padding:16px}
 .install-overlay.show{display:flex}
+.info-overlay{z-index:1150;align-items:center}
+.info-modal{max-width:400px;max-height:85dvh;overflow:hidden;display:flex;flex-direction:column;gap:10px}
+.info-body{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;
+  flex:1;min-height:0;max-height:58dvh;padding-right:4px}
+.info-body h4{color:var(--text);font-size:clamp(13px,3.2vw,15px);margin:12px 0 6px}
+.info-body h4:first-child{margin-top:0}
+.info-body p,.info-body li{font-size:clamp(12px,3vw,14px);color:var(--muted);line-height:1.45}
+.info-body p{margin-bottom:8px}
+.info-body ul{padding-left:18px;margin:0 0 10px}
+.info-body li{margin-bottom:6px}
 .install-modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:clamp(16px,4vw,24px);max-width:340px;width:100%;max-height:85dvh;overflow-y:auto}
 .install-modal h3{font-size:clamp(16px,4vw,20px);margin-bottom:8px;display:flex;align-items:center;gap:8px}
 .install-modal p,.install-modal li{font-size:clamp(12px,3vw,14px);color:var(--muted);line-height:1.45}
-.install-modal ol{padding-left:18px;margin:8px 0}
+.install-modal ol,.install-modal ul{padding-left:18px;margin:8px 0}
 .install-modal li{margin-bottom:6px;color:var(--text)}
 .install-modal .modal-close{margin-top:14px;width:100%}
 .install-modal .install-try{margin-top:10px;width:100%;display:none}
 .install-modal .install-try.show{display:block}
-.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1001;display:none;align-items:center;justify-content:center;padding:16px}
+.format-pre{margin-top:10px;padding:10px;border-radius:8px;background:var(--bg);border:1px solid var(--border);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10px;line-height:1.4;color:var(--accent2);
+  white-space:pre-wrap;word-break:break-word;text-align:left;user-select:text}
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1200;display:none;align-items:center;justify-content:center;padding:16px}
 .confirm-overlay.show{display:flex}
 .confirm-modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:clamp(16px,4vw,24px);max-width:320px;width:100%;text-align:center}
 .confirm-modal h3{font-size:clamp(15px,3.8vw,18px);margin-bottom:8px}
@@ -115,23 +134,100 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);
 .score-label{font-size:clamp(11px,2.8vw,13px);color:var(--muted)}
 .result-msg{font-size:clamp(14px,3.5vw,18px);font-weight:600}
 .result-detail{font-size:clamp(11px,2.8vw,13px);color:var(--muted)}
+.lib-header{flex-shrink:0;padding:clamp(14px,3vh,22px) clamp(12px,3vw,20px) clamp(8px,2vh,12px);display:flex;flex-direction:column;gap:6px;background:var(--bg);z-index:2}
+.lib-header-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.lib-header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.lib-kicker{font-size:clamp(10px,2.4vw,12px);color:var(--accent2);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.lib-header h1{font-size:clamp(22px,6vw,30px);font-weight:800}
+.lib-header p{font-size:clamp(12px,3vw,14px);color:var(--muted);line-height:1.4;max-width:520px}
+.add-quiz-btn{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(24px + var(--safe-b));
+  z-index:900;width:56px;height:56px;border:none;border-radius:50%;
+  background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  padding:0;box-shadow:0 8px 24px rgba(99,102,241,.45)}
+.add-quiz-btn.hidden{display:none}
+.add-quiz-btn svg{width:26px;height:26px;fill:currentColor}
+.add-quiz-btn:active{transform:scale(.95)}
+.settings-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.settings-row strong{display:block;font-size:clamp(13px,3.2vw,15px)}
+.settings-row span{display:block;font-size:clamp(11px,2.8vw,12px);color:var(--muted);margin-top:2px;line-height:1.35}
+.settings-title{font-size:clamp(15px,3.8vw,18px);font-weight:700}
+.settings-group{margin-top:0}
+.settings-link{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;
+  border:none;border-bottom:1px solid var(--border);background:none;color:var(--text);cursor:pointer;text-align:left}
+.settings-link strong{font-size:clamp(13px,3.2vw,15px);font-weight:700}
+.settings-link svg{width:18px;height:18px;fill:var(--muted);flex-shrink:0}
+.settings-version{text-align:center;font-size:clamp(11px,2.7vw,12px);color:var(--muted);padding:12px 0 2px}
+.switch{width:40px;height:24px;border:none;border-radius:99px;background:#475569;padding:0;flex-shrink:0;
+  position:relative;cursor:pointer;transition:background .2s}
+.switch.on{background:var(--accent)}
+.switch-knob{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;
+  box-shadow:0 1px 3px rgba(0,0,0,.28);transition:transform .2s}
+.switch.on .switch-knob{transform:translateX(16px)}
+.find-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:none;align-items:flex-end;justify-content:center;padding:12px}
+.find-overlay.show{display:flex}
+.find-modal{background:var(--surface);border:1px solid var(--border);border-radius:16px 16px 12px 12px;padding:clamp(14px,3vw,20px);
+  max-width:440px;width:100%;max-height:88dvh;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.find-modal-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.find-modal-head h3{font-size:clamp(16px,4vw,20px)}
+.find-modal p{font-size:clamp(12px,3vw,14px);color:var(--muted);line-height:1.4}
+.lib-body{flex:1;min-height:0;height:auto;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:0 clamp(12px,3vw,20px) calc(88px + var(--safe-b));display:flex;flex-direction:column;gap:10px}
+.scan-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.scan-actions .btn{flex:none;width:100%;padding:clamp(10px,2vh,12px);font-size:clamp(11px,2.8vw,13px)}
+.scan-actions .btn.span-2{grid-column:1/-1}
+.drop-zone{border:1.5px dashed var(--border);border-radius:12px;padding:clamp(14px,3vh,20px);text-align:center;
+  background:var(--surface);color:var(--muted);font-size:clamp(11px,2.8vw,13px);line-height:1.4;transition:border-color .15s,background .15s}
+.drop-zone.drag{border-color:var(--accent);background:rgba(99,102,241,.12);color:var(--text)}
+.scan-status{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+.scan-status h2{font-size:clamp(13px,3.2vw,15px);margin-bottom:4px}
+.scan-status p{font-size:clamp(11px,2.8vw,13px);color:var(--muted);line-height:1.4}
+.skip-list{margin-top:8px;display:flex;flex-direction:column;gap:4px}
+.skip-item{font-size:clamp(10px,2.5vw,12px);color:var(--muted);background:var(--surface);border-radius:8px;padding:6px 8px}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;text-align:left;flex-shrink:0}
+.quiz-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.quiz-card h3{font-size:clamp(14px,3.5vw,17px);font-weight:700;line-height:1.3}
+.quiz-card .quiz-file{font-size:clamp(10px,2.5vw,12px);color:var(--muted)}
+.quiz-card-actions{display:flex;gap:8px;align-items:center}
+.quiz-card-actions .btn{flex:1;padding:10px;font-size:clamp(12px,3vw,14px)}
+.icon-btn.danger:hover{color:var(--wrong);border-color:var(--wrong)}
+.empty-card{text-align:center;color:var(--muted);padding:28px 12px;border:1px dashed var(--border);border-radius:12px;font-size:clamp(12px,3vw,14px);line-height:1.4}
+.link-btn{background:none;border:none;color:var(--accent2);font-size:clamp(11px,2.8vw,13px);font-weight:600;cursor:pointer;padding:4px;align-self:flex-start}
+.back-row{display:flex;align-items:center;gap:8px}
 @media(max-height:600px){.feedback.show{max-height:24vh}.choice{padding:8px 10px;font-size:clamp(10px,2.8vw,13px)}}
 @media(max-height:500px){.feedback.show{max-height:20vh}.type-badge{margin-bottom:2px}}
-
+@media(max-width:420px){.scan-actions{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div id="app">
-  <div id="start-screen" class="screen active">
+  <div id="picker-screen" class="screen active">
+    <div class="lib-layout">
+      <div class="lib-header">
+        <div class="lib-header-row">
+          <div>
+            <h1>Quizzer Library</h1>
+          </div>
+          <div class="lib-header-actions">
+            <button class="icon-btn" id="lib-install-btn" type="button" onclick="handleInstallClick()" aria-label="Install app" title="Install app">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            </button>
+            <button class="icon-btn" type="button" onclick="openSettings()" aria-label="Settings" title="Settings">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="lib-body" id="picker-list"></div>
+    </div>
+  </div>
+
+  <div id="start-screen" class="screen">
     <div class="start-layout">
       <div class="start-content">
         <div class="start-icon">Q</div>
-        <div class="start-title">Quizzer</div>
-        <div class="start-sub">Technopreneurship Prelim Review — 122 interactive questions covering Problem Identification, Customer Segments, JTBD & Personas</div>
-        <div class="start-types">
-          <span class="tag">Definition</span><span class="tag">Application</span><span class="tag">Situational</span>
-        </div>
-        <div class="start-meta">122 Questions · Instant Feedback</div>
+        <div class="start-title" id="pack-title">Quizzer</div>
+        <div class="start-sub" id="pack-sub">Interactive reviewer quiz</div>
+        <div class="start-types" id="pack-types"></div>
+        <div class="start-meta" id="pack-meta"></div>
         <div id="install-ui" class="install-ui">
           <div class="install-hint" id="install-hint">Install Quizzer on your home screen for quick access.</div>
           <button class="btn btn-secondary install-start-btn" id="install-btn" type="button" onclick="handleInstallClick()">
@@ -141,16 +237,24 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);
         </div>
       </div>
       <div class="start-bottom">
+        <button class="btn btn-ghost" type="button" onclick="showPicker()">Quizzes</button>
         <button class="btn btn-primary btn-start" type="button" onclick="startQuiz()">Start Quiz</button>
       </div>
     </div>
   </div>
+
   <div id="quiz-screen" class="screen">
     <div class="topbar">
-      <div class="logo"><div class="logo-icon">Q</div>Quizzer</div>
+      <div class="logo">
+        <button class="icon-btn" type="button" onclick="askLeaveQuiz()" aria-label="Back to quizzes" title="Back to quizzes">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        </button>
+        <div class="logo-icon">Q</div>
+        <span id="quiz-brand">Quizzer</span>
+      </div>
       <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div></div>
       <div class="topbar-right">
-        <div class="counter" id="counter">1/122</div>
+        <div class="counter" id="counter">1/1</div>
         <button class="icon-btn" id="btn-shuffle" type="button" onclick="askShuffleQuestions()" aria-label="Randomize questions" title="Randomize questions">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
         </button>
@@ -158,6 +262,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08a5.99 5.99 0 01-5.65 4c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
         </button>
       </div>
+    </div>
+    <div class="quiz-pack-meta">
+      <div class="quiz-pack-title" id="quiz-pack-title">Quiz</div>
+      <div class="quiz-pack-file" id="quiz-pack-file"></div>
     </div>
     <div class="type-badge" id="type-badge">Definition</div>
     <div class="q-area">
@@ -173,6 +281,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);
       <button class="btn btn-primary" id="btn-next" onclick="nextQ()" disabled>Next</button>
     </div>
   </div>
+
   <div id="results-screen" class="screen">
     <div class="results-layout">
       <div class="results-content">
@@ -181,16 +290,94 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);
         <div class="score-ring" id="score-ring" style="--pct:0">
           <div class="score-inner">
             <div class="score-num" id="score-num">0</div>
-            <div class="score-label">/ <span id="score-total">122</span></div>
+            <div class="score-label">/ <span id="score-total">0</span></div>
           </div>
         </div>
         <div class="result-msg" id="result-msg"></div>
         <div class="result-detail" id="result-detail"></div>
       </div>
       <div class="results-bottom">
-        <button class="btn btn-primary btn-retry" type="button" onclick="restartQuiz()">Retry Quiz</button>
+        <button class="btn btn-secondary" type="button" onclick="showPicker()">Other Quiz</button>
+        <button class="btn btn-primary btn-retry" type="button" onclick="restartQuiz()">Retry</button>
       </div>
     </div>
+  </div>
+</div>
+
+<button class="add-quiz-btn" id="fab-add" type="button" onclick="openFindModal()" aria-label="Find quizzes" title="Find quizzes">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+</button>
+
+<input type="file" id="file-input" accept=".json,.txt,.md,application/json,text/markdown,text/plain" multiple hidden>
+
+<div class="find-overlay" id="find-overlay" onclick="if(event.target===this)closeFindModal()">
+  <div class="find-modal">
+    <div class="find-modal-head">
+      <h3>Find Quizzes</h3>
+      <button class="icon-btn" type="button" onclick="closeFindModal()" aria-label="Close" title="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </button>
+    </div>
+    <p>Scan local storage and import <strong>.json</strong>, <strong>.txt</strong>, or <strong>.md</strong> files that use this reviewer format.</p>
+    <div class="drop-zone" id="drop-zone">Drop quiz files here, or import them below.</div>
+    <div class="scan-actions">
+      <button class="btn btn-secondary" type="button" onclick="scanAllSources()">Scan Storage</button>
+      <button class="btn btn-secondary" type="button" onclick="pickFiles()">Import Files</button>
+      <button class="btn btn-secondary span-2" id="folder-btn" type="button" onclick="pickFolder()">Scan Folder</button>
+    </div>
+    <div class="scan-status" id="scan-status">
+      <h2 id="scan-title">Ready to scan</h2>
+      <p id="scan-detail">Matching quizzes will appear after a scan or import.</p>
+      <div class="skip-list" id="skip-list"></div>
+    </div>
+    <button class="link-btn" type="button" onclick="showFormatHelp()">What format is accepted?</button>
+    <button class="btn btn-primary" type="button" onclick="closeFindModal()">Done</button>
+  </div>
+</div>
+
+<div class="find-overlay" id="settings-overlay" onclick="if(event.target===this)closeSettings()">
+  <div class="find-modal">
+    <div class="find-modal-head">
+      <h3>Settings</h3>
+      <button class="icon-btn" type="button" onclick="closeSettings()" aria-label="Close" title="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </button>
+    </div>
+    <p>Turn included quizzes on or off in the library. Off hides them without deleting the questions.</p>
+    <div class="settings-row">
+      <div>
+        <strong>Sample Mini Reviewer</strong>
+        <span>Built-in 3-question sample</span>
+      </div>
+      <button class="switch" id="toggle-sample" type="button" role="switch" aria-checked="true" aria-label="Show Sample Mini Reviewer" onclick="toggleSampleQuiz()">
+        <span class="switch-knob"></span>
+      </button>
+    </div>
+    <div class="settings-row">
+      <div>
+        <strong>Technopreneurship Prelim</strong>
+        <span>Included 122-question reviewer</span>
+      </div>
+      <button class="switch" id="toggle-techno" type="button" role="switch" aria-checked="true" aria-label="Show Technopreneurship Prelim" onclick="toggleTechnoQuiz()">
+        <span class="switch-knob"></span>
+      </button>
+    </div>
+    <div class="settings-group">
+      <button class="settings-link" type="button" onclick="openInfoSheet('howto')">
+        <strong>How to use</strong>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+      </button>
+      <button class="settings-link" type="button" onclick="openInfoSheet('terms')">
+        <strong>Terms of use</strong>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+      </button>
+      <button class="settings-link" type="button" onclick="openInfoSheet('privacy')">
+        <strong>Privacy policy</strong>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+      </button>
+    </div>
+    <div class="settings-version" id="app-version">Version 1.0.0</div>
+    <button class="btn btn-primary" type="button" onclick="closeSettings()">Done</button>
   </div>
 </div>
 
@@ -205,6 +392,34 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);
   </div>
 </div>
 
+<div class="install-overlay" id="format-overlay" onclick="if(event.target===this)closeFormatHelp()">
+  <div class="install-modal">
+    <h3>Accepted quiz format</h3>
+    <p>JSON, TXT, or MD files must contain this question shape (or a <code>title</code> + <code>questions</code> wrapper). Anything else is hidden.</p>
+    <pre class="format-pre">{
+  "title": "My Reviewer",
+  "subtitle": "Optional description",
+  "questions": [
+    {
+      "id": 1,
+      "type": "Definition",
+      "topic": "Topic name",
+      "question": "Question text?",
+      "choices": ["Choice A", "Choice B", "Choice C", "Choice D"],
+      "correct": 0,
+      "explanations": {
+        "0": "Why A is correct",
+        "1": "Why B is wrong",
+        "2": "Why C is wrong",
+        "3": "Why D is wrong"
+      }
+    }
+  ]
+}</pre>
+    <button class="btn btn-primary modal-close" type="button" onclick="closeFormatHelp()">Got it</button>
+  </div>
+</div>
+
 <div class="install-overlay" id="install-overlay" onclick="if(event.target===this)closeInstallModal()">
   <div class="install-modal">
     <h3><span style="background:var(--accent);color:#fff;width:28px;height:28px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-weight:800">Q</span> Install Quizzer</h3>
@@ -214,13 +429,109 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);
   </div>
 </div>
 
+<div class="install-overlay info-overlay" id="info-overlay" onclick="if(event.target===this)closeInfoSheet()">
+  <div class="install-modal info-modal">
+    <div class="find-modal-head">
+      <h3 id="info-title">Info</h3>
+      <button class="icon-btn" type="button" onclick="closeInfoSheet()" aria-label="Close" title="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </button>
+    </div>
+    <div class="info-body" id="info-body"></div>
+    <button class="btn btn-primary modal-close" type="button" onclick="closeInfoSheet()">Close</button>
+  </div>
+</div>
+
 <script>
-const TOTAL=122;
 const ALL_QUESTIONS = [{"id": 1, "type": "Definition", "topic": "1.1 Macro View", "question": "What best describes a macro view in technopreneurship?", "choices": ["Analysis of large-scale economic, industry, or market trends affecting society as a whole", "Focus on individual customer purchase decisions only", "Micro-level analysis of a single product feature", "Detailed study of one company's internal operations"], "correct": 0, "explanations": {"0": "A macro view examines broad external forces—industry shifts, social developments, technical advancements, and economic trends—that shape entire markets.", "1": "Individual purchases are micro-level behavior.", "2": "Product features are micro details, not macro patterns.", "3": "Internal operations are micro analysis."}}, {"id": 2, "type": "Application", "topic": "1.1 Economic Forces", "question": "A startup founder notices the global rise of gig workers and builds a financial app for freelancers. Which macro force did they observe?", "choices": ["Technical advancements only", "Economic forces", "Social developments only", "Industry trends only"], "correct": 1, "explanations": {"0": "Technology enables gig work, but changing earning models are economic forces.", "1": "The gig economy reflects shifting income models and labor markets—a core economic force at the macro level.", "2": "Social behavior plays a role, but the primary lens here is economic.", "3": "Industry trends are sector-specific; gig work spans industries as an economic pattern."}}, {"id": 3, "type": "Situational", "topic": "1.2 Why Macro View", "question": "Without a macro perspective, entrepreneurs often end up:", "choices": ["Automatically attracting investors", "Skipping all problem validation", "Never needing customer segments", "Constantly putting out fires instead of being proactive"], "correct": 3, "explanations": {"0": "Investors want trend alignment; reactive founders struggle to demonstrate it.", "1": "Problem validation is still required; macro view complements it.", "2": "Customer segments remain essential regardless of macro view.", "3": "Avoiding macro view creates a myopic perspective—you react to daily crises instead of anticipating industry-wide shifts."}}, {"id": 4, "type": "Definition", "topic": "1.4 Genius of the AND", "question": "According to Jim Collins in Good to Great, successful analysis requires:", "choices": ["Only macro analysis", "Only micro analysis", "Both macro and micro analysis skills", "Neither—intuition alone is sufficient"], "correct": 2, "explanations": {"0": "Macro alone misses customer behavior and operations.", "1": "Micro alone misses industry trends and external threats.", "2": "Collins' 'genius of the AND' means zooming OUT for trends and zooming IN for operations and customer behaviors.", "3": "Collins argues for structured dual analysis, not intuition alone."}}, {"id": 5, "type": "Application", "topic": "1.4 Climate Macro", "question": "Which pair represents macro/industry-level responses to climate change?", "choices": ["Avoiding single-use plastic at home", "Wind/solar farms and development of bio-plastics", "Biking instead of driving locally", "Using energy-efficient appliances personally"], "correct": 1, "explanations": {"0": "Avoiding plastic is a personal/local micro action.", "1": "Macro/industry responses include renewable energy infrastructure, nuclear power, EVs, and bio-plastics—between personal habits and global treaties.", "2": "Biking is a micro personal transportation choice.", "3": "Energy-efficient appliances are micro/personal-level."}}, {"id": 6, "type": "Definition", "topic": "1.5 SDGs", "question": "The UN Sustainable Development Goals (SDGs) consist of how many goals?", "choices": ["17", "21", "12", "15"], "correct": 0, "explanations": {"0": "The UN adopted 17 SDGs—from No Poverty to Partnerships—as a macro map of global problem areas for entrepreneurs.", "1": "21 exceeds the adopted SDG count.", "2": "12 understates the SDG agenda.", "3": "The official UN framework has 17 goals, not 15."}}, {"id": 7, "type": "Application", "topic": "1.5 SDG Clean Water", "question": "An entrepreneur explores SDG 6 (Clean Water and Sanitation) for venture ideas. SDGs primarily serve as:", "choices": ["A tool to skip problem validation", "A substitute for customer personas", "A ready-made macro map of real-world problem areas", "A financial accounting framework"], "correct": 2, "explanations": {"0": "Validation remains essential after choosing a problem area.", "1": "Personas profile customers; SDGs map global problems—they complement each other.", "2": "SDGs help entrepreneurs discover macro-level challenges aligned with passion and societal impact.", "3": "SDGs are not financial frameworks."}}, {"id": 8, "type": "Situational", "topic": "2.3 Well-Stated Problem", "question": "A founder pitches: 'We will offer stock-market training to college students.' What is wrong?", "choices": ["It is too specific about the target market", "It identifies a dying industry", "It names the pain point clearly", "It describes a solution, not a problem"], "correct": 3, "explanations": {"0": "Specificity isn't the issue; jumping to a solution is.", "1": "Stock-market education isn't framed as a dying industry here.", "2": "It doesn't describe pain—it states what the company will offer.", "3": "Problem identification must start with pain or gap—not the product you plan to build."}}, {"id": 9, "type": "Definition", "topic": "2.1 Uri Levine", "question": "Uri Levine, co-founder of Waze, advises founders to:", "choices": ["Skip problem validation to move fast", "Focus on competitors before customers", "Fall in love with the first product idea", "Fall in love with the problem, not the solution"], "correct": 3, "explanations": {"0": "Skipping validation contradicts Levine's philosophy.", "1": "Competitors matter, but problem clarity comes first.", "2": "Product attachment too early causes tunnel vision.", "3": "Levine stresses problem identification as the foundation for all later venture decisions."}}, {"id": 10, "type": "Application", "topic": "2.3 Well-Stated Problem", "question": "Which statement is a WELL-STATED problem?", "choices": ["Despite high interest, many college students lack the knowledge and discipline to invest well in stock markets", "College students need to start saving and investing", "New-age investment apps are bringing younger investors into the market", "We will offer stock-market training to college students"], "correct": 0, "explanations": {"0": "A well-stated problem names who is affected and the specific pain—not a solution, trend, or vague wish.", "1": "This is too vague—it lacks a specific barrier or pain point.", "2": "This describes a market trend, not a defined pain.", "3": "This is a solution, not a problem."}}, {"id": 11, "type": "Situational", "topic": "2.5 Filter #5", "question": "Your team hasn't checked if the problem was already solved many times. Which filter did they skip?", "choices": ["Filter #2: Is your team passionate about it?", "Filter #5: Has it not already been solved too many times (is there real demand)?", "Filter #4: Is it highly painful or desirable to solve?", "Filter #1: Is it a relevant problem (not dying)?"], "correct": 1, "explanations": {"0": "Filter #2 checks team passion.", "1": "Filter #5 checks market saturation—whether genuine demand still exists for another solution.", "2": "Filter #4 checks pain/desirability, not oversupply.", "3": "Filter #1 checks relevance, not saturation."}}, {"id": 12, "type": "Definition", "topic": "2.9 5 Whys", "question": "The 5 Whys root cause technique was developed by:", "choices": ["Uri Levine, co-founder of Waze", "Jim Collins, author of Good to Great", "Sakichi Toyoda, founder of Toyota", "Steve Jobs, founder of Apple"], "correct": 2, "explanations": {"0": "Levine focuses on problem-first thinking, not 5 Whys authorship.", "1": "Collins wrote Good to Great; 5 Whys is a Toyota tool.", "2": "Sakichi Toyoda created the 5 Whys at Toyota to trace recurring symptoms to underlying root causes.", "3": "Jobs is associated with product design, not 5 Whys."}}, {"id": 13, "type": "Application", "topic": "2.9 5 Whys Example", "question": "In the classroom lateness 5 Whys example, the root cause identified is:", "choices": ["Having too much homework", "Poor discipline and lack of a clear daily schedule", "Waking up late only", "Using social media at night"], "correct": 1, "explanations": {"0": "Homework wasn't the identified root in this example.", "1": "Five iterations reveal poor schedule discipline—not the surface symptom of waking late.", "2": "Waking late is level-1 symptom, not root cause.", "3": "Social media is an intermediate cause."}}, {"id": 14, "type": "Situational", "topic": "2.6 Fall in Love", "question": "A founder is attached to their app design but hasn't confirmed users face the problem. They should:", "choices": ["Fall in love with the problem instead of the solution", "Focus only on competitor copying", "Apply geographic segmentation first", "Use SDGs and skip validation"], "correct": 0, "explanations": {"0": "Attachment to a solution before validating the problem's reality and scale is a classic startup mistake.", "1": "Copying competitors skips genuine problem understanding.", "2": "Segmentation doesn't replace problem validation.", "3": "SDGs inspire problems but don't validate yours."}}, {"id": 15, "type": "Definition", "topic": "2.8 Problem Analysis", "question": "Problem analysis asking 'Who is Impacted by it? How?' helps innovators:", "choices": ["Write financial projections only", "Choose brand colors and logos", "Understand affected people and how they experience the pain", "Skip customer empathy entirely"], "correct": 2, "explanations": {"0": "Financials are separate from impact analysis.", "1": "Branding comes after problem clarity.", "2": "Knowing who suffers and how they experience the problem builds empathy and sharper problem statements.", "3": "This question builds empathy—it doesn't replace it."}}, {"id": 16, "type": "Application", "topic": "2.7 Impact over Ego", "question": "Which problem-analysis benefit means prioritizing meaningful impact over defending your first idea?", "choices": ["Market Segmentation", "Open-mindedness", "Customer Empathy", "Impact over Ego"], "correct": 3, "explanations": {"0": "Segmentation divides markets—it isn't a problem-analysis benefit.", "1": "Open-mindedness means considering multiple solutions.", "2": "Customer Empathy means stepping into customers' shoes.", "3": "Impact over Ego keeps founders flexible—they solve the real problem rather than protect their initial concept."}}, {"id": 17, "type": "Situational", "topic": "2.2 Validate Problems", "question": "During validation your team asks: 'Who faces this and how urgent is it?' This is the:", "choices": ["Be Curious stage", "Identify Problems stage", "Generate Ideas stage", "Validate Problems stage"], "correct": 3, "explanations": {"0": "Being curious is the initial observation phase.", "1": "Identification precedes validation.", "2": "Idea generation follows validated problems.", "3": "Validation confirms who is affected and how important/urgent the problem is before building solutions."}}, {"id": 18, "type": "Definition", "topic": "2.3 Well-Stated Problem", "question": "A well-stated problem should NOT be:", "choices": ["A market trend or a proposed solution", "Concise and clear", "Specific about who is affected", "Focused on a real pain point"], "correct": 0, "explanations": {"0": "Trends describe market movement; solutions describe products—neither is a problem statement.", "1": "Conciseness aids communication.", "2": "Naming affected people is essential.", "3": "Describing pain is core to problem statements."}}, {"id": 19, "type": "Application", "topic": "2.4 Problem ID Steps", "question": "Problem identification steps include all EXCEPT:", "choices": ["Create a concise problem statement", "Determine who suffers from the pain", "Launch the product immediately to test the market", "Identify gaps and pain points in the industry"], "correct": 2, "explanations": {"0": "Problem statement creation is the final listed step.", "1": "Determining sufferers is explicit in the process.", "2": "The process builds understanding and a clear statement before any product launch.", "3": "Gap identification is the first step."}}, {"id": 20, "type": "Situational", "topic": "2.7 Open-mindedness", "question": "An innovator considers multiple solutions instead of fixating on one. This reflects:", "choices": ["Impact over Ego", "Open-mindedness", "Customer Empathy", "Behavioural segmentation"], "correct": 1, "explanations": {"0": "Impact over Ego deprioritizes defending one's idea.", "1": "Open-mindedness keeps innovators flexible about HOW to solve a validated problem.", "2": "Customer Empathy focuses on the customer's experience.", "3": "Behavioural segmentation is a market tool, not a problem-analysis benefit."}}, {"id": 21, "type": "Definition", "topic": "M2 Intro Customer Centricity", "question": "Module 2 states that being customer-centric is:", "choices": ["A requirement, not an optional choice, for any venture to succeed", "Needed only after product launch", "Relevant only for large corporations", "Optional and only needed for B2B"], "correct": 0, "explanations": {"0": "Customer-centricity is mandatory—understanding customer needs is foundational to product and venture success.", "1": "Customer understanding must precede and guide development.", "2": "Startups and family businesses need it equally.", "3": "Both B2C and B2B require customer-centricity."}}, {"id": 22, "type": "Application", "topic": "1.2 Segmentation WHO", "question": "Demographic segmentation groups customers by measurable traits and answers the question:", "choices": ["HOW they interact with the product", "WHO they are", "WHY they buy", "WHERE they are"], "correct": 1, "explanations": {"0": "HOW is behavioural segmentation.", "1": "Demographic criteria—age, gender, income, occupation—identify WHO the customer is.", "2": "WHY is psychographic segmentation.", "3": "WHERE is geographic segmentation."}}, {"id": 23, "type": "Situational", "topic": "1.2 Psychographic", "question": "A brand targets eco-conscious shoppers who value sustainability. Which criterion applies?", "choices": ["Demographic — WHO they are", "Behavioural — HOW they buy only", "Geographic — WHERE they are", "Psychographic — WHY they buy"], "correct": 3, "explanations": {"0": "Demographics use age/income, not inner values.", "1": "Behaviour focuses on actions; values are psychographic.", "2": "Geography uses location.", "3": "Psychographic segmentation groups buyers by values, lifestyle, personality, and motivations."}}, {"id": 24, "type": "Definition", "topic": "1.2 Geographic", "question": "Geographic segmentation groups customers by:", "choices": ["Values and lifestyle — WHY they buy", "Usage patterns — HOW they interact", "Physical location — WHERE they are", "Age and income — WHO they are"], "correct": 2, "explanations": {"0": "Values are psychographic.", "1": "Usage patterns are behavioural.", "2": "Geographic segmentation uses region, climate, and urban/rural location.", "3": "Age and income are demographic."}}, {"id": 25, "type": "Application", "topic": "1.4 B2B", "question": "A company selling accounting software to other companies operates as:", "choices": ["B2G (Business-to-Government)", "B2C (Business-to-Consumer)", "B2B (Business-to-Business)", "C2C (Consumer-to-Consumer)"], "correct": 2, "explanations": {"0": "B2G sells to government agencies.", "1": "B2C sells to end consumers.", "2": "B2B sells products/services to other businesses, not individual consumers.", "3": "C2C is consumer-to-consumer—not a primary segment type in the module."}}, {"id": 26, "type": "Situational", "topic": "1.4 B2G", "question": "A construction firm bids on a city's road-repair contract. This is:", "choices": ["B2G (Business-to-Government)", "D2C only", "B2C", "B2B commercial sales"], "correct": 0, "explanations": {"0": "Selling to government agencies defines the B2G business model.", "1": "D2C is a consumer channel, not government contracting.", "2": "B2C targets individual consumers.", "3": "B2B is business-to-business, not government procurement."}}, {"id": 27, "type": "Definition", "topic": "1.5 Buyer vs User", "question": "In the buyer vs. user model, who is the USER of Google Search?", "choices": ["Website owners exclusively", "Web users who search for information", "Advertisers who pay for ads", "Google's engineering team"], "correct": 1, "explanations": {"0": "All searchers are users, not just site owners.", "1": "Advertisers pay (buyers); web searchers use the service free (users).", "2": "Advertisers are buyers—they fund the platform.", "3": "Engineers build the product but aren't the user segment."}}, {"id": 28, "type": "Application", "topic": "1.5 BYJU'S", "question": "For BYJU'S ed-tech, the buyer is typically the parent and the user is the student. This means:", "choices": ["Only the student's opinion matters", "B2B rules apply instead of B2C", "Parents never influence purchases", "Marketing and product must address both payer and end-user needs"], "correct": 3, "explanations": {"0": "Both parties matter—payer decides, user determines engagement.", "1": "BYJU'S is B2C, selling to families/consumers.", "2": "Parents are often payers and decision-makers.", "3": "When buyer ≠ user, convince the payer while serving the actual user's experience."}}, {"id": 29, "type": "Situational", "topic": "1.5 Pedigree", "question": "For Pedigree dog food, the owner is the buyer and the dog is the user. The entrepreneur must understand:", "choices": ["The owner's purchasing motivations AND the dog's consumption needs", "Only veterinary regulations", "Only the dog's taste preferences", "Only competitor pricing"], "correct": 0, "explanations": {"0": "Both buyer willingness to pay and user acceptance must align for success.", "1": "Regulations matter but dual buyer-user understanding is the lesson.", "2": "Dog taste matters for the user, but the owner pays.", "3": "Pricing alone misses the dual targeting principle."}}, {"id": 30, "type": "Definition", "topic": "1.2 Behavioural", "question": "Behavioural segmentation groups customers by:", "choices": ["WHERE they live", "HOW they interact — usage patterns, loyalty, and purchase behavior", "WHO they are demographically", "WHY they hold certain values"], "correct": 1, "explanations": {"0": "Location is geographic.", "1": "Behavioural segmentation focuses on actions: purchase frequency, brand loyalty, usage habits.", "2": "Age/gender are demographic.", "3": "Values are psychographic."}}, {"id": 31, "type": "Application", "topic": "1.4 Sub-Segments", "question": "A shoe brand segments into Athletes, Hikers, Fashion-Conscious, and Orthopaedic Support Seekers. These are:", "choices": ["Government agency segments", "B2B customer types", "Macro economic forces", "Sub-segments within a larger B2C market"], "correct": 3, "explanations": {"0": "Government segments are B2G.", "1": "These are consumer groups, not business clients.", "2": "Macro forces are economy-wide, not customer sub-groups.", "3": "One B2C market (shoe buyers) contains distinct sub-segments with different needs."}}, {"id": 32, "type": "Situational", "topic": "1.2 Geographic Application", "question": "A venture ships only within Metro Manila. This applies:", "choices": ["Demographic segmentation only", "Root cause analysis", "Geographic segmentation", "Psychographic segmentation only"], "correct": 2, "explanations": {"0": "Demographic uses age/income traits.", "1": "Root cause analysis is a problem-solving tool.", "2": "Limiting service to a region is geographic segmentation—WHERE customers are.", "3": "Psychographic uses values/lifestyle."}}, {"id": 33, "type": "Definition", "topic": "1.1 Customer Segment", "question": "A customer segment is:", "choices": ["All people in a country", "Any person who visits your website once", "A distinct group of potential customers with similar needs and behaviors", "Only current paying customers"], "correct": 2, "explanations": {"0": "A whole country is too broad without shared criteria.", "1": "One-time visitors don't necessarily share needs.", "2": "Like a slice of pie, a segment shares common characteristics within the broader market.", "3": "Segments include potential customers, not just current ones."}}, {"id": 34, "type": "Application", "topic": "1.3 Segmentation Benefits", "question": "Which is NOT a listed benefit of market segmentation?", "choices": ["Better understanding of customer needs", "Eliminating the need for any marketing budget", "Focused targeting", "Personalization of product/service"], "correct": 1, "explanations": {"0": "Understanding needs is a core benefit.", "1": "Segmentation improves fit and targeting—it doesn't remove marketing investment.", "2": "Focused targeting allocates resources efficiently.", "3": "Personalization is explicitly listed."}}, {"id": 35, "type": "Situational", "topic": "1.7 Activity Step 1", "question": "Venture Journey Activity 2.1 Step 1 asks you to identify:", "choices": ["Your company's logo design", "The 5 Whys root cause", "Your SDG number only", "Whether your primary segment is B2B, B2C, or B2G"], "correct": 3, "explanations": {"0": "Logo is branding, not segment identification.", "1": "5 Whys is problem analysis.", "2": "SDGs may inspire problems but Step 1 is B2B/B2C/B2G.", "3": "Step 1 establishes the fundamental customer type before detailing characteristics."}}, {"id": 36, "type": "Definition", "topic": "2.1 JTBD", "question": "Jobs to Be Done (JTBD) focuses on:", "choices": ["The underlying task or goal the customer is trying to accomplish", "The company's org chart", "Competitor pricing alone", "The product's technical specs only"], "correct": 0, "explanations": {"0": "JTBD shifts thinking from features to the job customers 'hire' a product to do.", "1": "Org charts are internal structure.", "2": "Pricing is market analysis, not JTBD.", "3": "Specs describe the product, not the customer's goal."}}, {"id": 37, "type": "Application", "topic": "2.1 JTBD Emotional", "question": "A power drill buyer's functional job is 'make a hole.' An emotional job might be:", "choices": ["Maximize drill RPM specs", "Compare B2B vs B2C types", "Analyze macro industry trends", "Feel capable of fixing things myself"], "correct": 3, "explanations": {"0": "RPM is a product spec, not an emotional job.", "1": "Segment types aren't personal emotional goals.", "2": "Macro trends are external analysis.", "3": "JTBD includes emotional jobs—how the purchase makes the customer feel."}}, {"id": 38, "type": "Situational", "topic": "2.1 JTBD Service", "question": "A furniture-mounting service can satisfy the same JTBD as a power drill. This shows:", "choices": ["JTBD only applies to hardware", "Emotional jobs don't matter", "Customers hire products to get a job done—the solution form can vary", "Functional jobs matter less than features"], "correct": 2, "explanations": {"0": "JTBD applies to services and software too.", "1": "Emotional/social jobs are equally important.", "2": "Different offerings can fulfill the same underlying customer job.", "3": "Functional jobs are foundational to JTBD."}}, {"id": 39, "type": "Definition", "topic": "2.2 Customer Persona", "question": "A customer persona is:", "choices": ["A detailed, semi-fictional representation of your ideal customer based on research and data", "A fictional villain in marketing", "A financial projection spreadsheet", "An exact copy of one real person"], "correct": 0, "explanations": {"0": "Personas synthesize research into a vivid profile guiding product, marketing, and service decisions.", "1": "Personas are ideal archetypes, not antagonists.", "2": "Financial projections are separate tools.", "3": "Personas generalize patterns—they aren't 1:1 copies."}}, {"id": 40, "type": "Application", "topic": "2.3 Persona Elements", "question": "Which set lists core elements included in a customer persona?", "choices": ["Internal employee satisfaction scores only", "Age, Location, Occupation, Interests, Tech-savviness, Lifestyle, JTBD, and Frustrations", "Competitor patent numbers and stock prices", "Only company revenue targets and tax filings"], "correct": 1, "explanations": {"0": "Employee scores are internal HR data.", "1": "Personas combine demographics, lifestyle, jobs-to-be-done, and pain points into one research-based profile.", "2": "Patents and stock data aren't persona elements.", "3": "Revenue targets are business goals, not persona fields."}}, {"id": 41, "type": "Situational", "topic": "2.4 Rahul Pie JTBD", "question": "Rahul Pie (25, Social Media Manager, Pune) wants sneakers that:", "choices": ["Are stylish and comfortable, building confidence and earning peer validation", "Scale the company 4x in 12 months on low budget", "Bid on government road-repair contracts", "Manage a marketing team under CEO pressure"], "correct": 0, "explanations": {"0": "Rahul's JTBD blends functional needs (style, comfort) with social/emotional peer validation.", "1": "Scaling 4x is Vandana Singh's B2B challenge.", "2": "Government contracts are B2G, not Rahul's consumer need.", "3": "Team management is Vandana's organizational JTBD."}}, {"id": 42, "type": "Definition", "topic": "2.4 B2B Persona", "question": "For B2B personas, a vital additional element compared to B2C is:", "choices": ["Favorite shoe size", "Pet ownership status", "Social media username only", "Organizational role"], "correct": 3, "explanations": {"0": "Shoe size is a B2C consumer detail.", "1": "Pet ownership relates to Pedigree's buyer-user example, not B2B org mapping.", "2": "Usernames alone don't capture organizational role.", "3": "B2B personas map the customer's role—influencer, decision-maker, or end user—within their organization."}}, {"id": 43, "type": "Application", "topic": "2.4 Vandana Problem", "question": "Vandana Singh (Marketing Manager, AI marketing tool startup) faces the problem of:", "choices": ["Bidding on city infrastructure contracts", "Finding sneakers within budget in Pune", "How to scale the company 4x in 12 months and become brand leader in India with a low marketing budget", "Training college students to invest in stocks"], "correct": 2, "explanations": {"0": "Infrastructure bidding is B2G.", "1": "Sneaker budget frustration is Rahul Pie's B2C problem.", "2": "Vandana's B2B persona centers on aggressive growth and brand leadership under budget constraints.", "3": "Stock training is the module's problem-statement example."}}, {"id": 44, "type": "Situational", "topic": "2.5 Different Personas", "question": "Building separate personas for Athletes and Fashion-Conscious shoe buyers follows the rule that:", "choices": ["B2G customers never need personas", "Different personas must be developed for different segments", "Personas replace segmentation entirely", "One persona fits all segments"], "correct": 1, "explanations": {"0": "B2G can also use persona-style decision-maker profiles.", "1": "Each segment has distinct needs requiring its own research-based persona.", "2": "Personas complement segmentation—they don't replace it.", "3": "One persona can't capture different JTBD across segments."}}, {"id": 45, "type": "Definition", "topic": "1.4 Micro View", "question": "Micro analysis in the macro-micro framework examines:", "choices": ["Large-scale economic trends only", "Finer details — individual business operations or customer behaviors", "UN SDG numbering only", "Global treaties and super-macro policies"], "correct": 1, "explanations": {"0": "Large-scale trends are macro.", "1": "Micro zooms in on specific operations, customer actions, and business-level details.", "2": "SDG numbering is reference knowledge, not micro analysis.", "3": "Global treaties are super-macro."}}, {"id": 46, "type": "Application", "topic": "1.4 Zoom OUT/IN", "question": "'Zoom OUT to identify your area of interest; Zoom IN to uncover specific problems' describes:", "choices": ["Skipping problem validation", "Using only demographic segmentation", "Focusing solely on SDGs", "Using both macro and micro analysis together"], "correct": 3, "explanations": {"0": "Validation remains essential.", "1": "Demographics are one tool, not the zoom framework.", "2": "SDGs are one macro map, not a substitute for zoom analysis.", "3": "Zoom-out finds industries/domains; zoom-in reveals growth potential, startups, and specific challenges."}}, {"id": 47, "type": "Situational", "topic": "1.3 Family Business", "question": "A family business owner reads global trend reports to spot external risks. This applies the:", "choices": ["Family Business career path — spot risks and find expansion/diversification opportunities", "Corporate Job path — avoid all networking", "Launch a Venture path — skip investors", "None — family businesses don't need macro view"], "correct": 0, "explanations": {"0": "Macro view helps family businesses innovate, spot threats early, and diversify using global trends.", "1": "Corporate path includes networking with industry leaders.", "2": "Investor relations matters for new ventures.", "3": "Family businesses benefit significantly from macro perspective."}}, {"id": 48, "type": "Definition", "topic": "1.1 Technical Advancements", "question": "Technical advancements as a macro factor include:", "choices": ["Only traditional farming methods", "Personal budgeting habits", "Ethics for AI and questions that new technologies raise", "Individual shoe size preferences"], "correct": 2, "explanations": {"0": "Traditional farming isn't framed as a technical advancement factor.", "1": "Personal budgeting is micro/individual.", "2": "Technical macro factors cover emerging tech and the societal questions they create.", "3": "Shoe size is a micro consumer detail."}}, {"id": 49, "type": "Application", "topic": "1.1 Social Developments", "question": "Social developments as a macro factor are best exemplified by:", "choices": ["An individual's stock portfolio", "Public health failures during COVID-19", "A single person's morning routine", "One store's inventory count"], "correct": 1, "explanations": {"0": "Individual portfolios are personal finance.", "1": "Social developments are society-wide behavioral and living changes affecting many people.", "2": "Morning routines are personal/micro.", "3": "Store inventory is business micro-operation."}}, {"id": 50, "type": "Situational", "topic": "1.2 Trivial Problems", "question": "A founder solving a trivial problem that barely affects anyone will likely create:", "choices": ["Guaranteed unicorn status", "Automatic SDG compliance", "A solution with minimal impact that fails to serve society or the market", "No need for customer segments"], "correct": 2, "explanations": {"0": "Trivial problems rarely produce high-growth ventures.", "1": "SDG alignment requires intentional selection.", "2": "Without meaningful problems, solutions lack impact regardless of execution quality.", "3": "Segments remain essential."}}, {"id": 51, "type": "Definition", "topic": "1.1 Industry Trends", "question": "The lack of EV charging stations is an example of:", "choices": ["Industry trends and challenges — shifts, gaps, or recurring problems within an industry", "One customer's complaint", "A personal hobby preference", "A single employee review"], "correct": 0, "explanations": {"0": "Insufficient EV infrastructure is a sector-wide gap—a macro industry trend entrepreneurs can address.", "1": "Individual complaints are micro signals.", "2": "Hobbies are personal, not industry-wide.", "3": "Performance reviews are internal HR matters."}}, {"id": 52, "type": "Application", "topic": "2.3 Vague Problem", "question": "'College students need to start saving and investing' is weak because it is:", "choices": ["A well-stated problem with clear pain", "A root cause analysis result", "A proposed product solution", "Vague and not specific enough about the real pain"], "correct": 3, "explanations": {"0": "It doesn't name a specific pain or barrier.", "1": "Root cause analysis traces why problems persist.", "2": "It states a general need, not a product.", "3": "It lacks specificity about who suffers, what barrier exists, and what the real pain is."}}, {"id": 53, "type": "Situational", "topic": "2.5 Filter #3", "question": "Filter #3 asks: 'Is it one that matters to many people or companies?' This checks:", "choices": ["The scale and significance of the problem's audience", "Whether the product is colorful", "Whether you used the 5 Whys", "Whether your team has a logo"], "correct": 0, "explanations": {"0": "Problems worth solving should affect a meaningful number of people or organizations.", "1": "Aesthetics don't determine problem significance.", "2": "5 Whys is root cause analysis.", "3": "Logo design is branding."}}, {"id": 54, "type": "Definition", "topic": "2.7 Customer Empathy", "question": "Customer empathy as a problem-analysis benefit means:", "choices": ["Prioritizing founder ego over users", "Ignoring user feedback", "Stepping into the shoes of your customers", "Copying competitors exactly"], "correct": 2, "explanations": {"0": "Prioritizing ego opposes Impact over Ego.", "1": "Ignoring feedback contradicts customer-centricity.", "2": "Empathy guides innovators to deeply understand customer experiences, pains, and motivations.", "3": "Copying isn't empathy."}}, {"id": 55, "type": "Application", "topic": "2.8 Root Causes", "question": "Problem analysis asking 'What are the Root Causes?' supports:", "choices": ["Selecting brand colors only", "Choosing a company name", "Setting office furniture layout", "Solving problems at their source rather than treating symptoms"], "correct": 3, "explanations": {"0": "Brand colors are design, not causal analysis.", "1": "Naming is branding.", "2": "Office layout is operational.", "3": "Root cause identification prevents recurring problems that surface fixes can't resolve."}}, {"id": 56, "type": "Situational", "topic": "2.5 Filter #5 Saturation", "question": "Fifty identical apps already solve your chosen problem. Filter #5 suggests:", "choices": ["Ignore segmentation entirely", "There may not be real demand—consider a different problem", "Launch immediately anyway", "Skip all customer validation"], "correct": 1, "explanations": {"0": "Segmentation may help find niches but doesn't override demand concerns.", "1": "Oversaturated spaces often lack demand for yet another identical solution.", "2": "Saturation reduces differentiation opportunity.", "3": "Validation becomes more critical in crowded markets."}}, {"id": 57, "type": "Definition", "topic": "2.5 Filter #1", "question": "The 5-point filter's first question asks:", "choices": ["Does it require zero research?", "Is it the cheapest to solve?", "Is it a relevant problem (not one that's already 'dying')?", "Is it only interesting to the founder?"], "correct": 2, "explanations": {"0": "Research is essential.", "1": "Cost isn't a filter criterion.", "2": "Relevance ensures the problem still exists and isn't fading from importance.", "3": "Founder-only interest fails filters #3 and #4."}}, {"id": 58, "type": "Application", "topic": "2.2 Generate Ideas", "question": "After validating a problem, the next step in the idea-finding process is to:", "choices": ["Generate ideas that match your passion and offer delightful solutions", "Abandon the validated problem", "Incorporate the company immediately", "Skip directly to IPO planning"], "correct": 0, "explanations": {"0": "The flow is: Curious → Identify → Validate → Generate Ideas → then validate Solution and Business Model.", "1": "Validated problems should be pursued.", "2": "Incorporation follows solution and business model validation.", "3": "IPO is a late-stage outcome."}}, {"id": 59, "type": "Situational", "topic": "1.5 Samsung B2B", "question": "A Samsung CFO buys 1,000 A/C gas-filling machines for service engineers. This shows:", "choices": ["Only B2C has buyer-user distinction", "Government is always the B2B buyer", "B2B never separates buyers and users", "In B2B, the buyer (CFO) and user (engineer) can be different organizational roles"], "correct": 3, "explanations": {"0": "Buyer-user distinction applies to both B2C and B2B.", "1": "Government buyers indicate B2G.", "2": "B2B frequently separates economic buyer from end user.", "3": "B2B purchases often involve financial approvers (buyers) and operational staff (users)."}}, {"id": 60, "type": "Definition", "topic": "1.1 Segment Noun", "question": "Segment (noun) in market segmentation means:", "choices": ["A root cause analysis method", "A part or section distinct or separate from the whole — like a slice of pie", "A company's internal department", "The entire global population as one group"], "correct": 1, "explanations": {"0": "Root cause analysis is problem-solving.", "1": "A segment is a distinct portion of the broader market sharing common traits.", "2": "Departments are org structure.", "3": "Whole populations without criteria aren't segments."}}, {"id": 61, "type": "Application", "topic": "1.3 Customized Communication", "question": "Customized communication is a segmentation benefit because:", "choices": ["All customers prefer identical ads", "Different segments respond to different messaging", "One message works globally", "Segmentation eliminates messaging"], "correct": 1, "explanations": {"0": "Customers have diverse motivations.", "1": "Segment-specific messaging improves relevance, engagement, and conversion.", "2": "One-size-fits-all messaging underperforms.", "3": "Segmentation enhances messaging—it doesn't remove it."}}, {"id": 62, "type": "Situational", "topic": "1.2 Combined Segmentation", "question": "An eco-conscious shopper who always buys the same sustainable brand demonstrates:", "choices": ["Macro and micro analysis only", "B2G and B2B market types", "Geographic and demographic criteria only", "Psychographic values AND behavioural brand loyalty"], "correct": 3, "explanations": {"0": "Macro/micro are analysis levels.", "1": "B2G/B2B are market types, not this behavior pattern.", "2": "Location/age alone don't capture values and loyalty.", "3": "Values-driven buying is psychographic; repeat same-brand purchasing is behavioural."}}, {"id": 63, "type": "Definition", "topic": "1.4 B2C", "question": "B2C (Business-to-Consumer) means:", "choices": ["Businesses sell only to other businesses", "Consumers sell to businesses exclusively", "A company sells products/services directly to individual consumers", "Companies sell only to government"], "correct": 2, "explanations": {"0": "Business-to-business is B2B.", "1": "Consumer-to-business isn't the B2C definition.", "2": "B2C targets end consumers—shoppers, students, families—directly.", "3": "Business-to-government is B2G."}}, {"id": 64, "type": "Application", "topic": "1.3 Product Fit", "question": "Better product fit is a segmentation benefit because:", "choices": ["Understanding segment needs lets you tailor the product to match", "All segments want identical features", "Product fit is unrelated to segments", "Segmentation guarantees zero product changes"], "correct": 0, "explanations": {"0": "Segment insights drive feature prioritization and design for specific groups.", "1": "Different segments have different needs.", "2": "Product fit is directly tied to segment understanding.", "3": "Products typically require per-segment tailoring."}}, {"id": 65, "type": "Situational", "topic": "1.7 Activity Step 2", "question": "Venture Activity 2.1 Step 2 — Segment Characteristics — requires:", "choices": ["Listing all 17 SDGs", "Identifying broad traits common to people in the primary segment", "Running the 5 Whys on your product", "Designing your company logo"], "correct": 1, "explanations": {"0": "SDGs may inspire problems but aren't Step 2.", "1": "Step 2 captures shared demographic, geographic, psychographic, or behavioural traits.", "2": "5 Whys is root cause analysis.", "3": "Logo is branding."}}, {"id": 66, "type": "Definition", "topic": "2.1 Functional Jobs", "question": "In JTBD, functional jobs refer to:", "choices": ["How others perceive them only", "How the product makes them feel only", "The company's profit margin", "The practical task the customer needs accomplished"], "correct": 3, "explanations": {"0": "Social perception is emotional/social.", "1": "Feelings are emotional/social jobs.", "2": "Profit margin is a business metric.", "3": "Functional jobs are tangible outcomes—making a hole, completing a task, reaching a destination."}}, {"id": 67, "type": "Application", "topic": "2.1 Emotional/Social Jobs", "question": "JTBD requires equal importance for functional jobs and:", "choices": ["Emotional/social jobs", "Only technical specifications", "Only competitor analysis", "Only financial auditing"], "correct": 0, "explanations": {"0": "Customers hire products for practical tasks AND for how those products make them feel or look to others.", "1": "Specs alone miss emotional/social dimensions.", "2": "Competitor analysis supports strategy but isn't a job type.", "3": "Financial auditing is internal."}}, {"id": 68, "type": "Situational", "topic": "2.4 Vandana Frustrations", "question": "Vandana Singh's scaling challenge on a low budget belongs in her persona under:", "choices": ["The 5 Whys symptom tree only", "SDG numbering charts", "Problems / Frustrations", "Macro industry trend tables only"], "correct": 2, "explanations": {"0": "5 Whys analyzes causes; personas document frustrations.", "1": "SDG charts map global goals.", "2": "Personas explicitly document frustrations and problems the ideal customer faces.", "3": "Macro trends are external context."}}, {"id": 69, "type": "Definition", "topic": "2.2 Persona Purpose", "question": "Personas help businesses with all EXCEPT:", "choices": ["Product development decisions", "Customer service strategies", "Marketing strategy guidance", "Eliminating the need to ever talk to real customers"], "correct": 3, "explanations": {"0": "Personas inform feature priorities.", "1": "Personas tailor customer service.", "2": "Personas guide marketing messaging.", "3": "Personas are research-based guides—they never replace ongoing real customer interaction."}}, {"id": 70, "type": "Application", "topic": "2.3 Tech-savviness", "question": "Tech-savviness as a persona element helps decide:", "choices": ["Which SDG number to memorize", "Which digital channels and UX complexity to use", "How many 5 Whys iterations to run", "Whether macro view is optional"], "correct": 1, "explanations": {"0": "SDG selection relates to problem areas.", "1": "Tech-savviness shapes app design, platform choice, and support models.", "2": "5 Whys count isn't persona-driven.", "3": "Macro view is never optional for strategy."}}, {"id": 71, "type": "Situational", "topic": "1.2 Brand Loyalty", "question": "A frequent buyer who always chooses the same brand out of loyalty uses:", "choices": ["Geographic criteria only", "Demographic criteria only", "Behavioural segmentation", "B2G criteria"], "correct": 2, "explanations": {"0": "Geography uses location.", "1": "Demographics use age/income.", "2": "Purchase behavior and brand loyalty are core behavioural variables.", "3": "B2G is a market type, not a criterion."}}, {"id": 72, "type": "Definition", "topic": "Cheat Sheet 5 Whys", "question": "The Quick-Recap cheat sheet defines the 5 Whys as:", "choices": ["Ask 'why' repeatedly (~5 times) to trace a symptom back to its root cause", "Ask 'how much' to set pricing", "Ask 'what' repeatedly to list product features", "Ask 'who' once to identify competitors"], "correct": 0, "explanations": {"0": "5 Whys digs beneath surface symptoms to find the underlying root cause.", "1": "Pricing questions aren't root cause analysis.", "2": "Feature listing isn't 5 Whys.", "3": "Competitor ID isn't the 5 Whys method."}}, {"id": 73, "type": "Application", "topic": "1.3 Launch Venture", "question": "Using macro view to launch a venture helps founders:", "choices": ["Avoid all investor communication", "Focus only on office interior design", "Spot unmet needs, make strategic decisions, and attract investors by showing trend alignment", "Ignore industry trends deliberately"], "correct": 2, "explanations": {"0": "Investor communication is enhanced by macro insight.", "1": "Office design is operational detail.", "2": "Macro analysis identifies gaps, informs strategy, and demonstrates market fit to investors.", "3": "Ignoring trends contradicts macro perspective."}}, {"id": 74, "type": "Situational", "topic": "1.3 Corporate Job", "question": "Corporate professionals use macro view to network with industry leaders for:", "choices": ["Insight and job connections in growing industries", "Ignoring growth outlook data", "Focusing only on declining sectors", "Avoiding all skill development"], "correct": 0, "explanations": {"0": "Macro perspective plus networking helps identify growing fields and build relevant career connections.", "1": "Growth outlook is a key macro reflection topic.", "2": "Declining sectors offer fewer opportunities.", "3": "Macro view supports skill preparation."}}, {"id": 75, "type": "Definition", "topic": "1.6 Passion Area", "question": "Passion area in Lesson 1 reflections refers to:", "choices": ["Office supply inventory", "Areas you are passionate about and gaps you could work on", "Your company's tax filing schedule", "Competitor employee headcount"], "correct": 1, "explanations": {"0": "Inventory is operational.", "1": "Passion areas connect personal motivation to observable industry gaps worth pursuing.", "2": "Tax schedules are administrative.", "3": "Headcount is market intel, not passion mapping."}}, {"id": 76, "type": "Application", "topic": "1.6 Startups & Innovations", "question": "The Startups & Innovations reflection topic helps you understand:", "choices": ["Social media follower counts", "Historical bankruptcy records exclusively", "Internal HR vacation policies only", "The needs startups are solving and innovations being made in your industry"], "correct": 3, "explanations": {"0": "Follower counts are vanity metrics.", "1": "Bankruptcy records aren't the focus of this reflection.", "2": "HR policies are internal operations.", "3": "Tracking startup activity reveals where innovation happens and which problems are being tackled."}}, {"id": 77, "type": "Situational", "topic": "2.9 Symptom vs Root", "question": "In the lateness 5 Whys example, being late for class is:", "choices": ["The root cause itself", "Unrelated to the problem chain", "A symptom (the tree's leaves), not the root cause", "A macro industry trend"], "correct": 2, "explanations": {"0": "Root cause was poor discipline/lack of schedule.", "1": "Lateness starts the problem chain as the visible symptom.", "2": "Surface complaints are symptoms; root causes lie deeper—like poor schedule discipline.", "3": "Personal lateness is micro-level, not industry macro."}}, {"id": 78, "type": "Definition", "topic": "1.6 Growth Outlook", "question": "Growth outlook in macro reflections refers to:", "choices": ["A company's past quarterly revenue only", "How an industry is expected to perform in the future", "An employee's daily schedule", "One customer's satisfaction score"], "correct": 1, "explanations": {"0": "Past revenue is company history, not industry outlook.", "1": "Growth outlook projects future industry trajectory—expansion, contraction, or transformation.", "2": "Personal schedules aren't industry forecasts.", "3": "Individual satisfaction is micro feedback."}}, {"id": 79, "type": "Application", "topic": "1.5 SDG Gender/Inequality", "question": "Gender Equality and Reduced Inequalities correspond to SDGs:", "choices": ["SDG 8 and SDG 9", "SDG 14 and SDG 15", "SDG 1 and SDG 2", "SDG 5 and SDG 10 respectively"], "correct": 3, "explanations": {"0": "SDG 8 is Decent Work; SDG 9 is Industry & Innovation.", "1": "SDG 14 is Life Below Water; SDG 15 is Life on Land.", "2": "SDG 1 is No Poverty; SDG 2 is Zero Hunger.", "3": "SDG 5 is Gender Equality; SDG 10 is Reduced Inequalities—both among the 17 UN goals."}}, {"id": 80, "type": "Situational", "topic": "2.4 Problem ID Steps", "question": "Your team wrote a problem statement before listing pain points. The skipped step was:", "choices": ["Make a list of problems/pain points/unresolved needs", "Create a concise problem statement", "Identify gaps in the industry", "Choose the problem your team wants to address"], "correct": 0, "explanations": {"0": "Listing pain points precedes choosing one problem and writing the final statement.", "1": "Statement creation is the last step.", "2": "Gap identification is an earlier foundational step.", "3": "Choosing comes after listing options."}}, {"id": 81, "type": "Definition", "topic": "2.1 Stay Curious", "question": "Being curious in the idea-finding process means:", "choices": ["Skip observation and guess", "Observe the world and discover your passion", "Avoid asking any questions", "Copy the first startup you see"], "correct": 1, "explanations": {"0": "Observation is essential—guessing skips research.", "1": "Curiosity drives observation of problems—the starting point for opportunity discovery.", "2": "Asking 'Why not?' and challenging assumptions is encouraged.", "3": "Copying skips validation."}}, {"id": 82, "type": "Application", "topic": "1.5 SDG Health/Education", "question": "Good Health and Well-being and Quality Education are:", "choices": ["SDG 11 and SDG 12", "SDG 16 and SDG 17", "SDG 8 and SDG 9", "SDG 3 and SDG 4 respectively"], "correct": 3, "explanations": {"0": "SDG 11 is Sustainable Cities; SDG 12 is Responsible Consumption.", "1": "SDG 16 is Peace & Justice; SDG 17 is Partnerships.", "2": "SDG 8 is Decent Work; SDG 9 is Industry & Innovation.", "3": "SDG 3 promotes good health; SDG 4 promotes quality education—key macro problem areas."}}, {"id": 83, "type": "Situational", "topic": "1.4 B2C Example", "question": "A shoe brand selling sneakers directly to shoppers operates as:", "choices": ["B2B", "Non-commercial", "B2C", "B2G"], "correct": 2, "explanations": {"0": "B2B sells to other businesses.", "1": "This is a commercial consumer sale.", "2": "Direct sales to individual consumers define B2C.", "3": "B2G sells to government."}}, {"id": 84, "type": "Definition", "topic": "1.5 Google Buyer", "question": "The BUYER in Google's search advertising model is:", "choices": ["Advertisers who pay for ad placements", "Internet service providers", "Google's software developers", "Web users who search for free"], "correct": 0, "explanations": {"0": "Advertisers pay (buyers); searchers use the product free (users).", "1": "ISPs provide connectivity—they aren't ad buyers.", "2": "Developers build the platform.", "3": "Web users are users, not payers."}}, {"id": 85, "type": "Application", "topic": "1.7 Activity Step 3", "question": "Venture Activity 2.1 Step 3 — Secondary Segments — asks you to identify:", "choices": ["Only one segment total", "Zero segments because segmentation is optional", "Only government agencies", "Up to 3 secondary customer segments beyond the primary"], "correct": 3, "explanations": {"0": "One segment ignores secondary opportunities.", "1": "Segmentation is required, not optional.", "2": "Secondaries can be B2B, B2C, or B2G—not only government.", "3": "After the primary segment, up to three secondary segments broaden market understanding."}}, {"id": 86, "type": "Situational", "topic": "2.4 B2B Org Role", "question": "'Organizational role' as a persona element is vital when targeting:", "choices": ["Wild animals as end users only", "B2B customers and influencers", "Internal accounting ledgers", "Anonymous web traffic only"], "correct": 1, "explanations": {"0": "Animals can be users (Pedigree) but org role is a B2B human factor.", "1": "B2B personas map roles—CFO buyer, engineer user, marketing manager influencer.", "2": "Ledgers are financial records.", "3": "Web traffic is analytics, not persona mapping."}}, {"id": 87, "type": "Definition", "topic": "2.3 Lifestyle", "question": "Lifestyle as a persona element captures:", "choices": ["The company's manufacturing process", "Competitor stock price history", "How the customer lives, spends time, and what they value day-to-day", "Government tax code sections"], "correct": 2, "explanations": {"0": "Manufacturing is internal operations.", "1": "Stock prices are market data.", "2": "Lifestyle covers activities, interests, social habits, and daily patterns.", "3": "Tax codes are legal/regulatory."}}, {"id": 88, "type": "Application", "topic": "2.4 Rahul Channels", "question": "Rahul Pie being active on Instagram and fashion forums informs:", "choices": ["Marketing channel selection and community engagement strategy", "Global treaty drafting", "5 Whys iteration count", "B2G procurement rules"], "correct": 0, "explanations": {"0": "Knowing where Rahul spends time online guides social and community-based marketing.", "1": "Treaties are super-macro policy.", "2": "5 Whys is root cause methodology.", "3": "B2G is government contracting."}}, {"id": 89, "type": "Situational", "topic": "2.5 Filter #2", "question": "Filter #2 'Is it one your team feels passionate about?' ensures:", "choices": ["Only financial metrics matter", "Passion replaces customer validation", "Team motivation to persist through the venture journey", "The problem requires zero effort"], "correct": 2, "explanations": {"0": "Financial metrics matter but passion drives commitment.", "1": "Passion complements but never replaces validation.", "2": "Passion sustains founders through challenges—it's one of five problem-worthiness filters.", "3": "Worthy problems still require significant effort."}}, {"id": 90, "type": "Definition", "topic": "2.1 Idea vs Problem", "question": "The Idea vs. Problem distinction teaches startups to begin with:", "choices": ["A real-world problem, not just an idea or product concept", "An office lease agreement", "A social media hashtag", "A logo design concept"], "correct": 0, "explanations": {"0": "The right starting point is a validated problem—not branding or tactics.", "1": "Office lease is operational.", "2": "Hashtags are marketing tactics.", "3": "Logo comes after problem-solution fit."}}, {"id": 91, "type": "Application", "topic": "1.4 Climate Micro", "question": "Personal/local micro responses to climate change include:", "choices": ["Global research and advocacy programs", "Avoiding single-use plastic, using energy-efficient appliances, and biking instead of driving", "Wind and solar farms at industry scale", "The Paris Agreement and global treaties"], "correct": 1, "explanations": {"0": "Global advocacy is super-macro.", "1": "Micro actions are individual/local habits—plastic reduction, efficient appliances, biking.", "2": "Wind/solar farms are macro/industry scale.", "3": "Paris Agreement is super-macro/global."}}, {"id": 92, "type": "Situational", "topic": "2.6 Solution Attachment", "question": "Founders overly attached to a specific solution should shift toward:", "choices": ["Skipping the 5-point filter", "Avoiding all customer contact", "Permanently keeping the first prototype unchanged", "Loving the problem and staying flexible on how to solve it"], "correct": 3, "explanations": {"0": "All five filters should be applied.", "1": "Customer contact is essential.", "2": "Permanent prototype attachment is what the lesson warns against.", "3": "Problem-first thinking keeps solution options open until the problem is deeply validated."}}, {"id": 93, "type": "Definition", "topic": "1.3 Focused Targeting", "question": "Focused targeting as a segmentation benefit means:", "choices": ["Serving every segment identically", "Marketing to everyone with no priorities", "Avoiding all communication", "Concentrating resources on the most relevant customer groups"], "correct": 3, "explanations": {"0": "Startups must choose focus, especially early on.", "1": "Marketing to everyone dilutes resources.", "2": "Communication is essential—targeting refines it.", "3": "Focused targeting allocates limited startup resources to highest-potential segments."}}, {"id": 94, "type": "Application", "topic": "2.4 Vandana Values", "question": "Vandana Singh values creativity, innovation, and sustainability. These are:", "choices": ["5 Whys answers", "B2G procurement criteria", "Psychographic/lifestyle traits in her persona", "Geographic location data only"], "correct": 2, "explanations": {"0": "5 Whys traces root causes, not persona values.", "1": "Procurement applies to government sales.", "2": "Values and aspirations are psychographic elements shaping her JTBD and decisions.", "3": "Her location (Gurugram) is geographic."}}, {"id": 95, "type": "Situational", "topic": "2.5 Filter #4", "question": "'Is it highly painful or highly desirable to solve?' corresponds to filter:", "choices": ["#5 — saturation test", "#4 — the pain/desirability test", "#2 — passion test", "#1 — relevance test"], "correct": 1, "explanations": {"0": "#5 checks market oversaturation.", "1": "Filter #4 assesses whether the problem causes enough pain or desire to motivate solution-seeking.", "2": "#2 checks team passion.", "3": "#1 checks if the problem is still relevant."}}, {"id": 96, "type": "Definition", "topic": "1.4 Super Macro", "question": "The Paris Agreement and global financial support to developing nations represent:", "choices": ["Super-macro / global-level climate action", "Individual store inventory management", "Micro personal habit changes", "Single customer persona profiling"], "correct": 0, "explanations": {"0": "International treaties and global programs operate at the super-macro level—above industry macro.", "1": "Inventory is micro business operation.", "2": "Personal habits are micro.", "3": "Personas profile individual customers."}}, {"id": 97, "type": "Application", "topic": "2.2 Process Flow", "question": "After generating ideas, the process leads to validating the:", "choices": ["Office parking layout", "Solution, Business Model, and related venture elements", "Company logo color only", "Social media username"], "correct": 1, "explanations": {"0": "Parking is operational trivia.", "1": "The full flow: Curious → Identify → Validate Problem → Generate Ideas → Validate Solution & Business Model.", "2": "Logo color is branding detail.", "3": "Usernames are marketing details."}}, {"id": 98, "type": "Situational", "topic": "2.1 Observe Problems", "question": "Startup ideas come from observing problems through:", "choices": ["Staying curious, observing, and asking 'Why not?'", "Avoiding critical questions", "Skipping all market research", "Copying competitors without thinking"], "correct": 0, "explanations": {"0": "Observation, curiosity, and challenging assumptions ('Why not?') reveal real opportunities.", "1": "Critical questioning is explicitly encouraged.", "2": "Research and observation are essential.", "3": "Blind copying skips problem understanding."}}, {"id": 99, "type": "Definition", "topic": "1.5 SDG Work/Innovation", "question": "Decent Work and Economic Growth and Industry, Innovation and Infrastructure are:", "choices": ["SDG 3 and SDG 4 only", "SDG 1 and SDG 2", "SDG 16 and SDG 17 only", "SDG 8 and SDG 9 respectively"], "correct": 3, "explanations": {"0": "SDG 3 is Good Health; SDG 4 is Quality Education.", "1": "SDG 1 is No Poverty; SDG 2 is Zero Hunger.", "2": "SDG 16 is Peace & Justice; SDG 17 is Partnerships.", "3": "SDG 8 promotes decent work; SDG 9 focuses on industry, innovation, and infrastructure."}}, {"id": 100, "type": "Application", "topic": "1.3 Family Business Innovation", "question": "Family businesses use macro view to bring:", "choices": ["Complete avoidance of diversification", "Zero external awareness of risks", "Fresh, innovative ideas from global trends", "Only traditional methods forever"], "correct": 2, "explanations": {"0": "Diversification is a stated family business benefit.", "1": "Macro view specifically helps spot external risks.", "2": "Macro perspective injects innovation and helps family businesses spot risks and diversify.", "3": "Global trends inspire fresh ideas, not stagnation."}}, {"id": 101, "type": "Situational", "topic": "2.8 Personal Connection", "question": "Problem analysis asking about your personal connection to the problem helps:", "choices": ["Build genuine motivation and authentic understanding of the pain", "Skip customer empathy entirely", "Replace the need for segmentation", "Avoid all validation steps"], "correct": 0, "explanations": {"0": "Personal connection fuels passion and deeper empathy—but still requires customer validation.", "1": "Personal connection complements empathy.", "2": "Segmentation is still required.", "3": "Validation remains necessary."}}, {"id": 102, "type": "Definition", "topic": "1.5 SDG Poverty/Hunger", "question": "No Poverty and Zero Hunger are:", "choices": ["SDG 10 and SDG 11", "SDG 1 and SDG 2 respectively", "SDG 8 and SDG 9", "SDG 14 and SDG 15"], "correct": 1, "explanations": {"0": "SDG 10 is Reduced Inequalities; SDG 11 is Sustainable Cities.", "1": "SDG 1 is No Poverty; SDG 2 is Zero Hunger—the first two UN Sustainable Development Goals.", "2": "SDG 8 is Decent Work; SDG 9 is Industry & Innovation.", "3": "SDG 14 is Life Below Water; SDG 15 is Life on Land."}}, {"id": 103, "type": "Application", "topic": "1.5 SDG Cities/Consumption", "question": "Sustainable Cities and Communities and Responsible Consumption and Production are:", "choices": ["SDG 3 and SDG 4", "SDG 1 and SDG 2", "SDG 11 and SDG 12 respectively", "SDG 5 and SDG 6"], "correct": 2, "explanations": {"0": "SDG 3 is Good Health; SDG 4 is Quality Education.", "1": "SDG 1 is No Poverty; SDG 2 is Zero Hunger.", "2": "SDG 11 addresses sustainable cities; SDG 12 addresses responsible consumption—macro urban and consumption challenges.", "3": "SDG 5 is Gender Equality; SDG 6 is Clean Water."}}, {"id": 104, "type": "Situational", "topic": "1.5 CFO Buyer", "question": "A CFO approving budget for machines used by service engineers is the:", "choices": ["Secondary segment label only", "User who operates the machines", "Fictional persona with no real role", "Buyer — the one who pays or approves the purchase"], "correct": 3, "explanations": {"0": "CFO represents buyer role, not a segment label.", "1": "Engineers are users.", "2": "CFO is a real B2B organizational role.", "3": "The CFO pays/approves (buyer); engineers operate the machines (users)."}}, {"id": 105, "type": "Definition", "topic": "1.5 SDG Environment", "question": "Life Below Water and Life on Land are:", "choices": ["SDG 8 and SDG 9", "SDG 1 and SDG 2", "SDG 3 and SDG 4", "SDG 14 and SDG 15 respectively"], "correct": 3, "explanations": {"0": "SDG 8 is Decent Work; SDG 9 is Industry & Innovation.", "1": "SDG 1 is No Poverty; SDG 2 is Zero Hunger.", "2": "SDG 3 is Good Health; SDG 4 is Quality Education.", "3": "SDG 14 protects marine ecosystems; SDG 15 protects terrestrial ecosystems."}}, {"id": 106, "type": "Application", "topic": "1.5 SDG Governance", "question": "Peace, Justice and Strong Institutions and Partnerships for the Goals are:", "choices": ["SDG 13 and SDG 14", "SDG 5 and SDG 6", "SDG 16 and SDG 17 respectively", "SDG 11 and SDG 12"], "correct": 2, "explanations": {"0": "SDG 13 is Climate Action; SDG 14 is Life Below Water.", "1": "SDG 5 is Gender Equality; SDG 6 is Clean Water.", "2": "SDG 16 promotes peace and strong institutions; SDG 17 promotes global partnerships—the final SDGs.", "3": "SDG 11 is Sustainable Cities; SDG 12 is Responsible Consumption."}}, {"id": 107, "type": "Situational", "topic": "2.4 Rahul Frustration", "question": "Rahul Pie's core frustration is struggling to find sneakers that:", "choices": ["Meet fashion and comfort needs within budget, leading to unsatisfactory purchases", "Scale a company 4x in 12 months", "Win government infrastructure bids", "Manage CFO-approved equipment orders"], "correct": 0, "explanations": {"0": "Rahul can't find sneakers balancing style, comfort, and affordability—a key persona frustration.", "1": "Scaling 4x is Vandana's B2B challenge.", "2": "Infrastructure bids are B2G.", "3": "CFO equipment orders are Samsung's B2B example."}}, {"id": 108, "type": "Definition", "topic": "2.4 Vandana JTBD", "question": "Vandana Singh's B2B JTBD includes wanting:", "choices": ["Dog food the owner and pet both accept", "Campaigns that resonate, brand loyalty, less team stress, and respect from the CEO/Board", "Stylish sneakers for peer validation", "Free web search results"], "correct": 1, "explanations": {"0": "Dog food is the Pedigree buyer-user example.", "1": "Vandana's organizational JTBD covers marketing impact, loyalty, team management, and executive respect.", "2": "Sneaker validation is Rahul's B2C JTBD.", "3": "Free search describes Google's user experience."}}, {"id": 109, "type": "Application", "topic": "1.4 Climate Super Macro", "question": "Global research and advocacy on climate change represents:", "choices": ["One customer's persona element", "Micro personal recycling only", "Single-store inventory management", "Super-macro action — alongside treaties like the Paris Agreement"], "correct": 3, "explanations": {"0": "Personas profile individuals, not global programs.", "1": "Personal recycling is micro.", "2": "Inventory is business micro-operation.", "3": "Global research, advocacy, and financial support operate at the super-macro level above industry."}}, {"id": 110, "type": "Situational", "topic": "1.6 Reflection Macro Industry", "question": "The 'Macro Industry' reflection topic helps you understand:", "choices": ["How to design a company logo", "Office furniture arrangement", "Why a macro view matters for a larger perspective of industries", "Which font to use in pitch decks"], "correct": 2, "explanations": {"0": "Logo design is branding.", "1": "Furniture is operational.", "2": "Macro Industry reflection builds appreciation for zooming out to see industry-wide patterns and opportunities.", "3": "Fonts are presentation details."}}, {"id": 111, "type": "Definition", "topic": "1.6 Reflection Market Segmentation", "question": "The 'Market Segmentation' reflection topic covers:", "choices": ["Choosing SDG colors", "Dividing a broad market into sub-groups based on shared characteristics", "Running the 5 Whys on lateness", "Writing a business incorporation document"], "correct": 1, "explanations": {"0": "SDG colors aren't a reflection topic.", "1": "Segmentation divides markets into focused sub-groups for clarity and targeted strategy.", "2": "5 Whys is root cause analysis.", "3": "Incorporation is legal setup."}}, {"id": 112, "type": "Application", "topic": "1.6 Reflection Buyer/User", "question": "The 'Differentiating Buyers & Users' reflection emphasizes:", "choices": ["Why telling buyer and user apart matters for targeting and who actually faces the problem", "Why SDGs have 17 items", "Why offices need parking", "Why logos must be blue"], "correct": 0, "explanations": {"0": "Buyer-user distinction shapes targeting, messaging, and understanding who experiences the pain.", "1": "SDG count is factual, not the reflection focus.", "2": "Parking is operational.", "3": "Logo color is branding preference."}}, {"id": 113, "type": "Situational", "topic": "2.3 Trend vs Problem", "question": "'New-age investment apps are bringing younger investors into the market' is:", "choices": ["A trend observation, not a well-stated problem", "A well-stated problem with named pain", "A root cause analysis finding", "A complete customer persona"], "correct": 0, "explanations": {"0": "Trends describe market movement—they don't specify who hurts and how.", "1": "Well-stated problems name affected people and specific pain.", "2": "Root causes explain why problems persist.", "3": "Personas are customer profiles."}}, {"id": 114, "type": "Definition", "topic": "Cheat Sheet Macro View", "question": "The Quick-Recap defines Macro View as:", "choices": ["Individual customer shoe preferences", "One employee's daily schedule", "A single store's inventory count", "Large-scale trends and factors affecting whole industries or economies"], "correct": 3, "explanations": {"0": "Shoe preferences are micro consumer details.", "1": "Schedules are personal micro matters.", "2": "Inventory is micro business operation.", "3": "Macro view = broad external forces shaping entire industries or economies."}}, {"id": 115, "type": "Application", "topic": "Cheat Sheet JTBD", "question": "The Quick-Recap defines JTBD as:", "choices": ["A competitor's patent filing", "The underlying functional plus emotional/social job a customer hires a product to do", "A company's internal profit margin target", "An SDG numbering system"], "correct": 1, "explanations": {"0": "Patents are legal/competitive data.", "1": "JTBD captures both practical tasks and emotional/social outcomes customers seek.", "2": "Profit margin is a business metric.", "3": "SDG numbering is reference knowledge."}}, {"id": 116, "type": "Situational", "topic": "2.5 All Filters", "question": "A validated problem affects many people, your team is passionate, but 50 identical apps exist. Best action:", "choices": ["Launch without any differentiation", "Ignore all five filters", "Reconsider—Filter #5 signals insufficient real demand despite other strengths", "Skip all customer interviews"], "correct": 2, "explanations": {"0": "Differentiation may help but saturation warrants caution.", "1": "All five filters matter collectively.", "2": "Saturation with identical solutions suggests weak demand—passion and scale alone aren't enough.", "3": "Interviews become more important in saturated markets."}}, {"id": 117, "type": "Definition", "topic": "Cheat Sheet Buyer vs User", "question": "The Quick-Recap states Buyer vs. User means:", "choices": ["Users always pay for the product", "Buyer and user are always the same person", "The one who pays is not always the one who uses the product", "Only government can be the buyer"], "correct": 2, "explanations": {"0": "Google Search users don't pay—advertisers do.", "1": "Many examples show buyer and user differ.", "2": "Pedigree, BYJU'S, Samsung, and Google Search all illustrate payer ≠ user.", "3": "Government buyers indicate B2G specifically."}}, {"id": 118, "type": "Application", "topic": "1.5 SDG Climate/Energy", "question": "Climate Action and Affordable and Clean Energy are:", "choices": ["SDG 13 and SDG 7 respectively", "SDG 16 and SDG 17", "SDG 1 and SDG 2", "SDG 5 and SDG 6"], "correct": 0, "explanations": {"0": "SDG 13 addresses climate action; SDG 7 addresses clean energy—both macro sustainability areas.", "1": "SDG 16 is Peace & Justice; SDG 17 is Partnerships.", "2": "SDG 1 is No Poverty; SDG 2 is Zero Hunger.", "3": "SDG 5 is Gender Equality; SDG 6 is Clean Water."}}, {"id": 119, "type": "Situational", "topic": "2.6 Reflection Persona B2B", "question": "The 'Persona for B2B' reflection topic highlights that B2B personas:", "choices": ["Replace the need for any segmentation", "Are identical to B2C personas in every field", "Never include frustrations or problems", "Add Organizational Role and write JTBD from the organization's perspective"], "correct": 3, "explanations": {"0": "Personas complement segmentation.", "1": "B2B adds org role—B2C doesn't require it.", "2": "Frustrations are included in all personas.", "3": "B2B personas require org role mapping and organization-level jobs-to-be-done."}}, {"id": 120, "type": "Definition", "topic": "2.5 Create Persona", "question": "The 'Create Customer Persona' reflection teaches you to:", "choices": ["Avoid any research or data", "Build a persona for your chosen segment based on the problem your team chose to solve", "Copy a competitor's persona exactly", "Skip segment identification entirely"], "correct": 1, "explanations": {"0": "Research and data are foundational to personas.", "1": "Personas are built for your specific segment and problem context using research.", "2": "Personas should be research-based, not copied blindly.", "3": "Segment identification precedes persona creation."}}, {"id": 121, "type": "Application", "topic": "2.2 Validate Then Build", "question": "A founder who validates WHO faces the problem and its urgency BEFORE building avoids:", "choices": ["Using macro analysis ever", "Creating products nobody urgently needs", "Building any personas", "Needing customer segments ever"], "correct": 1, "explanations": {"0": "Macro view informs which problems to explore.", "1": "Problem validation ensures real demand before investing in solution development.", "2": "Personas translate segments into actionable profiles.", "3": "Segments target validated customers."}}, {"id": 122, "type": "Situational", "topic": "1.3 Launch Venture Investors", "question": "Launching a venture with macro view helps attract investors by:", "choices": ["Avoiding any strategic decisions", "Presenting only micro-level data", "Showing how the business fits larger industry and societal trends", "Hiding all trend data from investors"], "correct": 2, "explanations": {"0": "Strategic decisions should be trend-informed.", "1": "Macro alignment complements micro execution details.", "2": "Investors want evidence that your venture aligns with meaningful macro trends and market gaps.", "3": "Hiding trends reduces investor confidence."}}];
-const LETTERS=['A','B','C','D'];
-let QUESTIONS=ALL_QUESTIONS.slice();
+const LETTERS=['A','B','C','D','E','F','G','H'];
+const STORAGE_INDEX='quizzer.library.v1';
+const STORAGE_PREFIX='quizzer.quiz.v1.';
+const BUILTIN_ID='builtin-sample-mini-reviewer';
+const OLD_BUILTIN_ID='builtin-technopreneurship-prelim';
+const IMPORTED_TECHNO_ID='imported-technopreneurship-prelim';
+const STORAGE_BUILTIN_HIDDEN='quizzer.builtin.hidden';
+const STORAGE_TECHNO_HIDDEN='quizzer.techno.hidden';
+const STORAGE_PREFS='quizzer.prefs.v1';
+const IDB_NAME='quizzer-idb';
+const IDB_STORE='kv';
+const QUIZ_EXTS=['.json','.txt','.md'];
+const APP_VERSION='1.0.0';
+const SAMPLE_QUESTIONS=[{"id":1,"type":"Definition","topic":"Sample","question":"What does a reusable Quizzer load?","choices":["Any matching JSON, TXT, or MD quiz in the library format","Only PDFs","Only the first hardcoded quiz forever","Random websites"],"correct":0,"explanations":{"0":"Quizzer accepts the same question shape used by this reviewer, from .json, .txt, or .md files.","1":"PDFs are not a supported quiz format here.","2":"The built-in quiz is one pack; you can open others from the library.","3":"Quizzes come from local storage and imported files, not arbitrary websites."}},{"id":2,"type":"Application","topic":"Sample","question":"A file has questions but no choices array. What should Quizzer do?","choices":["Open it anyway","Hide it because the format does not match","Convert it into a PDF","Install it as an app"],"correct":1,"explanations":{"0":"Missing choices means it is not a valid reviewer question.","1":"Only files with question, choices, and a correct index are listed.","2":"Quizzer does not convert files to PDF.","3":"Install is unrelated to format validation."}},{"id":3,"type":"Situational","topic":"Sample","question":"You finished one reviewer and want a different subject. What do you do?","choices":["Refresh the whole browser profile","Edit the HTML by hand each time","Go back to the picker and open another quiz","Delete local storage"],"correct":2,"explanations":{"0":"You do not need to reset the browser.","1":"The library is meant to be reused without rewriting the app.","2":"Use Quizzes / Other Quiz to return to the picker and switch packs.","3":"Removing storage would delete imported quizzes."}}];
+
+let library=[];
+let lastScan={matched:0,skipped:[]};
+let activePack=null;
+let prefsCache=null;
+let ALL_SOURCE=[];
+let QUESTIONS=[];
+let TOTAL=0;
 let cur=0,answers={},answered=new Set(),score=0;
 let confirmCallback=null;
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  var fab=document.getElementById('fab-add');
+  if(fab)fab.classList.toggle('hidden',id!=='picker-screen');
+}
+function showPicker(){
+  renderPicker();
+  showScreen('picker-screen');
+}
+function openFindModal(){
+  document.getElementById('find-overlay').classList.add('show');
+  var fab=document.getElementById('fab-add');
+  if(fab)fab.classList.add('hidden');
+  updateScanStatus();
+}
+function closeFindModal(){
+  document.getElementById('find-overlay').classList.remove('show');
+  var fab=document.getElementById('fab-add');
+  if(fab)fab.classList.remove('hidden');
+  renderPicker();
+}
+function openSettings(){
+  updateSettingsToggles();
+  document.getElementById('settings-overlay').classList.add('show');
+  var fab=document.getElementById('fab-add');
+  if(fab)fab.classList.add('hidden');
+}
+function closeSettings(){
+  closeInfoSheet();
+  document.getElementById('settings-overlay').classList.remove('show');
+  var fab=document.getElementById('fab-add');
+  if(fab)fab.classList.remove('hidden');
+  renderPicker();
+}
+function openInfoSheet(kind){
+  var pages={
+    howto:{
+      title:'How to use',
+      html:'<h4>Open a quiz</h4><p>Quizzer Library lists every matching reviewer on this device. Tap Open Quiz, then Start Quiz.</p><h4>Add more quizzes</h4><p>Tap the + button. Import .json, .txt, or .md files, drop them on the page, or scan a folder. Only files that match the question format appear.</p><h4>Included quizzes</h4><p>Use the switches in Settings to show or hide Sample Mini Reviewer and Technopreneurship Prelim. Hiding them does not delete the questions.</p><h4>During a quiz</h4><ul><li>Choose an answer to see if it is correct.</li><li>Use Next and Back to move between questions.</li><li>Shuffle randomizes the order. Restart starts the same quiz over.</li></ul><h4>After you finish</h4><p>See your score, tap Retry, or go back to the library and open another quiz.</p><h4>Install for offline use</h4><p>Use the download icon to install Quizzer on your home screen. After one online visit, it can work offline.</p>'
+    },
+    terms:{
+      title:'Terms of use',
+      html:'<h4>1. About Quizzer</h4><p>Quizzer is a personal study tool for opening and practicing reviewer quizzes on this device. By using the app, you agree to these terms.</p><h4>2. Study use only</h4><p>Quizzer is meant to help you review. It is not an official exam, grade, or school record. Course materials, question wording, and answers may contain mistakes. Always check your class notes, syllabus, and instructor.</p><h4>3. Academic honesty</h4><p>Use this app to study. Do not use it to cheat on quizzes, tests, or other graded work. You are responsible for following your school’s academic integrity rules.</p><h4>4. Your imported files</h4><p>You may import your own .json, .txt, or .md quizzes. You must have the right to use those files. Do not import content you are not allowed to copy or share.</p><h4>5. No warranty</h4><p>Quizzer is provided as is. We do not promise that it will be error-free, always available, or complete. Scores, explanations, and saved quizzes can be lost if you clear site data or uninstall the app.</p><h4>6. Liability</h4><p>To the fullest extent allowed by law, the app author is not liable for lost study time, lost data, device issues, or academic outcomes that come from using Quizzer.</p><h4>7. Changes</h4><p>These terms may change when the app is updated. Continued use after an update means you accept the revised terms.</p><h4>8. Contact</h4><p>Questions about these terms can be directed to the person who shared this Quizzer copy with you.</p>'
+    },
+    privacy:{
+      title:'Privacy policy',
+      html:'<h4>1. Local app</h4><p>Quizzer runs in your browser or as an installed app on this device. It does not ask you to create an account.</p><h4>2. What stays on your device</h4><p>Imported quizzes, library settings, and which included quizzes you hid are stored in this device’s local storage. Quiz progress lives in memory until you leave the quiz.</p><h4>3. What we do not collect</h4><p>Quizzer does not require your name, email, or school login. It does not send your answers or imported files to a Quizzer server.</p><h4>4. Files you import</h4><p>When you import or scan a quiz, the file is read on this device so it can be saved in the library. Quizzer does not upload that file for you.</p><h4>5. Offline install</h4><p>If you install Quizzer, the app may cache its pages and quizzes on this device so it can work offline. That cache stays on the device.</p><h4>6. Clearing data</h4><p>Clearing this site’s data, resetting the browser, or uninstalling the app can delete imported quizzes and settings. Included quizzes can be shown again from Settings.</p><h4>7. Other software</h4><p>Your browser, operating system, or school device policy may still log visits or storage. This policy only describes Quizzer itself.</p><h4>8. Updates</h4><p>This privacy policy may change when Quizzer is updated. The latest copy is always in Settings.</p>'
+    }
+  };
+  var page=pages[kind];
+  if(!page)return;
+  document.getElementById('info-title').textContent=page.title;
+  document.getElementById('info-body').innerHTML=page.html;
+  document.getElementById('info-body').scrollTop=0;
+  document.getElementById('info-overlay').classList.add('show');
+}
+function closeInfoSheet(){
+  var overlay=document.getElementById('info-overlay');
+  if(overlay)overlay.classList.remove('show');
+}
+function showFormatHelp(){document.getElementById('format-overlay').classList.add('show');}
+function closeFormatHelp(){document.getElementById('format-overlay').classList.remove('show');}
 
 function showConfirm(title,message,onYes){
   document.getElementById('confirm-title').textContent=title;
@@ -237,6 +548,795 @@ document.getElementById('confirm-yes').onclick=function(){
   closeConfirm();
   if(cb)cb();
 };
+
+function fileExt(name){
+  var m=String(name||'').toLowerCase().match(/(\.[a-z0-9]+)$/);
+  return m?m[1]:'';
+}
+function looksLikeQuizFile(name){
+  return QUIZ_EXTS.indexOf(fileExt(name))!==-1;
+}
+function titleFromFilename(name){
+  return String(name||'Imported Quiz').replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim()||'Imported Quiz';
+}
+function uniqueTypes(questions){
+  var seen=[];
+  questions.forEach(function(q){
+    var t=q.type||'Question';
+    if(seen.indexOf(t)===-1)seen.push(t);
+  });
+  return seen;
+}
+function cloneQuestions(questions){
+  return JSON.parse(JSON.stringify(questions));
+}
+
+function parseCorrectIndex(raw,choiceCount){
+  if(typeof raw==='number'&&Number.isInteger(raw))return raw;
+  if(typeof raw==='string'){
+    var s=raw.trim();
+    if(/^\d+$/.test(s))return parseInt(s,10);
+    var letter=s.toUpperCase();
+    var idx=LETTERS.indexOf(letter);
+    if(idx>=0)return idx;
+  }
+  return NaN;
+}
+
+function normalizeExplanations(raw,choiceCount){
+  var out={};
+  var i;
+  if(!raw){
+    for(i=0;i<choiceCount;i++)out[String(i)]='';
+    return out;
+  }
+  if(Array.isArray(raw)){
+    for(i=0;i<choiceCount;i++)out[String(i)]=raw[i]==null?'':String(raw[i]);
+    return out;
+  }
+  if(typeof raw==='object'){
+    for(i=0;i<choiceCount;i++){
+      var val=raw[String(i)];
+      if(val==null)val=raw[LETTERS[i]];
+      if(val==null)val=raw[LETTERS[i].toLowerCase()];
+      out[String(i)]=val==null?'':String(val);
+    }
+    return out;
+  }
+  for(i=0;i<choiceCount;i++)out[String(i)]='';
+  return out;
+}
+
+function normalizeQuestion(raw,index){
+  if(!raw||typeof raw!=='object'||Array.isArray(raw))return null;
+  var question=typeof raw.question==='string'?raw.question.trim():'';
+  if(!question)return null;
+  if(!Array.isArray(raw.choices)||raw.choices.length<2)return null;
+  var choices=[];
+  for(var i=0;i<raw.choices.length;i++){
+    if(typeof raw.choices[i]!=='string'||!raw.choices[i].trim())return null;
+    choices.push(raw.choices[i]);
+  }
+  var correct=parseCorrectIndex(raw.correct!=null?raw.correct:raw.answer,choices.length);
+  if(!Number.isInteger(correct)||correct<0||correct>=choices.length)return null;
+  return {
+    id:raw.id!=null?raw.id:index+1,
+    type:(typeof raw.type==='string'&&raw.type.trim())?raw.type.trim():'Question',
+    topic:(typeof raw.topic==='string')?raw.topic:'',
+    question:question,
+    choices:choices,
+    correct:correct,
+    explanations:normalizeExplanations(raw.explanations,choices.length)
+  };
+}
+
+function normalizeQuiz(data,sourceName,sourceType){
+  var title='',subtitle='',list=null;
+  if(Array.isArray(data)){
+    list=data;
+    title=titleFromFilename(sourceName);
+  }else if(data&&typeof data==='object'){
+    if(Array.isArray(data.questions))list=data.questions;
+    else if(Array.isArray(data.ALL_QUESTIONS))list=data.ALL_QUESTIONS;
+    title=(typeof data.title==='string'&&data.title.trim())?data.title.trim():titleFromFilename(sourceName);
+    subtitle=(typeof data.subtitle==='string'&&data.subtitle.trim())?data.subtitle.trim():
+      (typeof data.description==='string'&&data.description.trim())?data.description.trim():'';
+  }
+  if(!list)return null;
+  var questions=[];
+  list.forEach(function(item,i){
+    var q=normalizeQuestion(item,i);
+    if(q)questions.push(q);
+  });
+  if(!questions.length)return null;
+  return {
+    title:title,
+    subtitle:subtitle||(questions.length+' interactive questions'),
+    sourceName:sourceName||title,
+    sourceType:sourceType||'json',
+    questions:questions
+  };
+}
+
+function parseMarkdownQuiz(text,sourceName){
+  var lines=text.replace(/\r\n/g,'\n').split('\n');
+  var title='';
+  var subtitle='';
+  var blocks=[];
+  var current=null;
+  function pushCurrent(){if(current&&current.question)blocks.push(current);}
+
+  lines.forEach(function(line){
+    var heading=line.match(/^#{1,3}\s+(.+)/);
+    var qNum=line.match(/^(?:Q(?:uestion)?\s*)?(\d+)[\).\]]\s+(.+)/i);
+    if(heading){
+      var h=heading[1].trim();
+      if(!title){title=h;return;}
+      pushCurrent();
+      current={question:h,type:'Question',topic:'',choices:[],correct:-1,explainLines:[]};
+      return;
+    }
+    if(qNum){
+      pushCurrent();
+      current={question:qNum[2].trim(),type:'Question',topic:'',choices:[],correct:-1,explainLines:[]};
+      return;
+    }
+    if(!current){
+      if(!subtitle&&line.trim()&&!title){title=line.trim();}
+      else if(!subtitle&&line.trim()){subtitle=line.trim();}
+      return;
+    }
+    var typeM=line.match(/^\*?\*?Type:\*?\*?\s*(.+)/i);
+    var topicM=line.match(/^\*?\*?Topic:\*?\*?\s*(.+)/i);
+    var correctM=line.match(/^\*?\*?Correct:\*?\*?\s*(.+)/i);
+    var check=line.match(/^\s*[-*]\s+\[(x|X| )\]\s+(.+)/);
+    var letter=line.match(/^\s*([A-Ha-h])[\).\:]\s+(.+)/);
+    var why=line.match(/^\*?\*?Why\s+([A-Ha-h])\s+is\s+(correct|wrong):\*?\*?\s*(.+)/i);
+    if(typeM){current.type=typeM[1].trim();return;}
+    if(topicM){current.topic=topicM[1].trim();return;}
+    if(correctM){
+      current.correct=parseCorrectIndex(correctM[1],8);
+      return;
+    }
+    if(check){
+      current.choices.push(check[2].trim());
+      if(check[1].toLowerCase()==='x')current.correct=current.choices.length-1;
+      return;
+    }
+    if(letter){
+      current.choices.push(letter[2].replace(/\s*\*\s*$/,'').trim());
+      return;
+    }
+    if(why){current.explainLines.push({idx:parseCorrectIndex(why[1],8),text:why[3].trim()});return;}
+  });
+  pushCurrent();
+  if(!blocks.length)return null;
+  var questions=blocks.map(function(b,i){
+    var explanations={};
+    b.explainLines.forEach(function(e){if(Number.isInteger(e.idx))explanations[String(e.idx)]=e.text;});
+    return normalizeQuestion({
+      id:i+1,
+      type:b.type,
+      topic:b.topic,
+      question:b.question,
+      choices:b.choices,
+      correct:b.correct,
+      explanations:explanations
+    },i);
+  }).filter(Boolean);
+  if(!questions.length)return null;
+  return {
+    title:title||titleFromFilename(sourceName),
+    subtitle:subtitle||(questions.length+' interactive questions'),
+    sourceName:sourceName||title,
+    sourceType:fileExt(sourceName).replace('.','')||'md',
+    questions:questions
+  };
+}
+
+function parseQuizContent(text,sourceName){
+  if(text==null)return null;
+  var trimmed=String(text).trim();
+  if(!trimmed)return null;
+  var sourceType=(fileExt(sourceName).replace('.','')||'json');
+  try{
+    return normalizeQuiz(JSON.parse(trimmed),sourceName,sourceType);
+  }catch(e){}
+  var fence=trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if(fence){
+    try{return normalizeQuiz(JSON.parse(fence[1]),sourceName,sourceType);}catch(e){}
+  }
+  return parseMarkdownQuiz(trimmed,sourceName);
+}
+
+function builtinPack(){
+  return {
+    id:BUILTIN_ID,
+    title:'Sample Mini Reviewer',
+    subtitle:'Tiny 3-question pack to test the reusable Quizzer library',
+    sourceName:'built-in',
+    sourceType:'json',
+    builtin:true,
+    importedAt:0,
+    questions:cloneQuestions(SAMPLE_QUESTIONS)
+  };
+}
+function technoImportedPack(){
+  return {
+    id:IMPORTED_TECHNO_ID,
+    title:'Technopreneurship Prelim',
+    subtitle:'Problem Identification, Customer Segments, JTBD & Personas',
+    sourceName:'technopreneurship-prelim.json',
+    sourceType:'json',
+    builtin:false,
+    importedAt:1,
+    questions:cloneQuestions(ALL_QUESTIONS)
+  };
+}
+function defaultPrefs(){
+  return {sampleVisible:true,technoVisible:true,deletedIds:[],deletedFingerprints:[]};
+}
+function readPrefs(){
+  var prefs=defaultPrefs();
+  try{
+    var raw=localStorage.getItem(STORAGE_PREFS);
+    var parsed=raw?JSON.parse(raw):null;
+    if(parsed&&typeof parsed==='object'){
+      if(typeof parsed.sampleVisible==='boolean')prefs.sampleVisible=parsed.sampleVisible;
+      if(typeof parsed.technoVisible==='boolean')prefs.technoVisible=parsed.technoVisible;
+      if(Array.isArray(parsed.deletedIds))prefs.deletedIds=parsed.deletedIds.slice();
+      if(Array.isArray(parsed.deletedFingerprints))prefs.deletedFingerprints=parsed.deletedFingerprints.slice();
+    }
+  }catch(e){}
+  if(localStorage.getItem(STORAGE_BUILTIN_HIDDEN)==='1')prefs.sampleVisible=false;
+  if(localStorage.getItem(STORAGE_TECHNO_HIDDEN)==='1')prefs.technoVisible=false;
+  return prefs;
+}
+function getPrefs(){
+  if(!prefsCache)prefsCache=readPrefs();
+  return prefsCache;
+}
+function writePrefs(prefs){
+  prefsCache=prefs;
+  try{
+    localStorage.setItem(STORAGE_PREFS,JSON.stringify(prefs));
+    if(prefs.sampleVisible)localStorage.removeItem(STORAGE_BUILTIN_HIDDEN);
+    else localStorage.setItem(STORAGE_BUILTIN_HIDDEN,'1');
+    if(prefs.technoVisible)localStorage.removeItem(STORAGE_TECHNO_HIDDEN);
+    else localStorage.setItem(STORAGE_TECHNO_HIDDEN,'1');
+  }catch(e){}
+  persistSnapshot();
+}
+function openIdb(){
+  return new Promise(function(resolve){
+    if(!window.indexedDB)return resolve(null);
+    var req=indexedDB.open(IDB_NAME,1);
+    req.onupgradeneeded=function(){
+      if(!req.result.objectStoreNames.contains(IDB_STORE))req.result.createObjectStore(IDB_STORE);
+    };
+    req.onsuccess=function(){resolve(req.result);};
+    req.onerror=function(){resolve(null);};
+  });
+}
+function persistSnapshot(){
+  var dump={};
+  try{
+    for(var i=0;i<localStorage.length;i++){
+      var k=localStorage.key(i);
+      if(k&&k.indexOf('quizzer.')===0)dump[k]=localStorage.getItem(k);
+    }
+  }catch(e){return;}
+  openIdb().then(function(db){
+    if(!db)return;
+    try{
+      db.transaction(IDB_STORE,'readwrite').objectStore(IDB_STORE).put(dump,'snapshot');
+    }catch(e){}
+  });
+}
+function hydrateSnapshot(){
+  return openIdb().then(function(db){
+    if(!db)return;
+    return new Promise(function(resolve){
+      var req;
+      try{req=db.transaction(IDB_STORE,'readonly').objectStore(IDB_STORE).get('snapshot');}
+      catch(e){return resolve();}
+      req.onsuccess=function(){
+        var dump=req.result;
+        if(!dump||typeof dump!=='object')return resolve();
+        Object.keys(dump).forEach(function(k){
+          try{if(localStorage.getItem(k)==null)localStorage.setItem(k,dump[k]);}catch(e){}
+        });
+        prefsCache=null;
+        resolve();
+      };
+      req.onerror=function(){resolve();};
+    });
+  }).catch(function(){});
+}
+function rememberImported(pack){
+  if(!pack)return;
+  var prefs=getPrefs();
+  var fp=fingerprint(pack);
+  prefs.deletedIds=prefs.deletedIds.filter(function(id){return id!==pack.id;});
+  prefs.deletedFingerprints=prefs.deletedFingerprints.filter(function(item){return item!==fp;});
+  writePrefs(prefs);
+}
+function markDeleted(pack){
+  if(!pack)return;
+  var prefs=getPrefs();
+  if(prefs.deletedIds.indexOf(pack.id)===-1)prefs.deletedIds.push(pack.id);
+  var fp=fingerprint(pack);
+  if(fp&&prefs.deletedFingerprints.indexOf(fp)===-1)prefs.deletedFingerprints.push(fp);
+  writePrefs(prefs);
+}
+function isDeletedPack(pack){
+  if(!pack)return true;
+  var prefs=getPrefs();
+  if(prefs.deletedIds.indexOf(pack.id)!==-1)return true;
+  return prefs.deletedFingerprints.indexOf(fingerprint(pack))!==-1;
+}
+function isBuiltinVisible(){
+  return getPrefs().sampleVisible;
+}
+function isTechnoVisible(){
+  return getPrefs().technoVisible;
+}
+function isBundledPack(pack){
+  return !!(pack&&(pack.builtin||pack.id===IMPORTED_TECHNO_ID));
+}
+function updateSettingsToggles(){
+  var sample=document.getElementById('toggle-sample');
+  var techno=document.getElementById('toggle-techno');
+  if(sample){
+    sample.classList.toggle('on', isBuiltinVisible());
+    sample.setAttribute('aria-checked', isBuiltinVisible()?'true':'false');
+  }
+  if(techno){
+    techno.classList.toggle('on', isTechnoVisible());
+    techno.setAttribute('aria-checked', isTechnoVisible()?'true':'false');
+  }
+}
+function toggleSampleQuiz(){
+  var prefs=getPrefs();
+  prefs.sampleVisible=!prefs.sampleVisible;
+  writePrefs(prefs);
+  restoreLibrary();
+  updateSettingsToggles();
+}
+function toggleTechnoQuiz(){
+  var prefs=getPrefs();
+  prefs.technoVisible=!prefs.technoVisible;
+  writePrefs(prefs);
+  restoreLibrary();
+  updateSettingsToggles();
+}
+function seedImportedTechno(){
+  var idx=readIndex();
+  var next=idx.filter(function(item){
+    return item&&item.id!==OLD_BUILTIN_ID&&item.id!==BUILTIN_ID;
+  });
+  if(next.length!==idx.length)writeIndex(next);
+  try{localStorage.removeItem(STORAGE_PREFIX+OLD_BUILTIN_ID);}catch(e){}
+}
+
+function packMeta(pack){
+  return {
+    id:pack.id,
+    title:pack.title,
+    subtitle:pack.subtitle,
+    sourceName:pack.sourceName,
+    sourceType:pack.sourceType,
+    builtin:!!pack.builtin,
+    importedAt:pack.importedAt||Date.now(),
+    questionCount:pack.questions.length,
+    types:uniqueTypes(pack.questions)
+  };
+}
+
+function readIndex(){
+  try{
+    var raw=localStorage.getItem(STORAGE_INDEX);
+    var idx=raw?JSON.parse(raw):[];
+    return Array.isArray(idx)?idx:[];
+  }catch(e){return [];}
+}
+function writeIndex(idx){
+  localStorage.setItem(STORAGE_INDEX,JSON.stringify(idx));
+  persistSnapshot();
+}
+function savePack(pack){
+  var idx=readIndex().filter(function(item){return item.id!==pack.id;});
+  idx.unshift(packMeta(pack));
+  writeIndex(idx);
+  localStorage.setItem(STORAGE_PREFIX+pack.id,JSON.stringify({
+    id:pack.id,
+    title:pack.title,
+    subtitle:pack.subtitle,
+    sourceName:pack.sourceName,
+    sourceType:pack.sourceType,
+    builtin:!!pack.builtin,
+    importedAt:pack.importedAt||Date.now(),
+    questions:pack.questions
+  }));
+  persistSnapshot();
+}
+function loadPack(id){
+  if(id===BUILTIN_ID)return builtinPack();
+  try{
+    var raw=localStorage.getItem(STORAGE_PREFIX+id);
+    if(!raw)return null;
+    var data=JSON.parse(raw);
+    var normalized=normalizeQuiz({title:data.title,subtitle:data.subtitle,questions:data.questions},data.sourceName,data.sourceType);
+    if(!normalized)return null;
+    normalized.id=id;
+    normalized.builtin=!!data.builtin;
+    normalized.importedAt=data.importedAt;
+    return normalized;
+  }catch(e){return null;}
+}
+function deletePack(id){
+  if(id===BUILTIN_ID){
+    var prefs=getPrefs();
+    prefs.sampleVisible=false;
+    writePrefs(prefs);
+    return;
+  }
+  if(id===IMPORTED_TECHNO_ID){
+    var prefs=getPrefs();
+    prefs.technoVisible=false;
+    writePrefs(prefs);
+    return;
+  }
+  var pack=loadPack(id);
+  if(pack)markDeleted(pack);
+  else{
+    var leftover=getPrefs();
+    if(leftover.deletedIds.indexOf(id)===-1)leftover.deletedIds.push(id);
+    writePrefs(leftover);
+  }
+  var idx=readIndex().filter(function(item){return item.id!==id;});
+  writeIndex(idx);
+  localStorage.removeItem(STORAGE_PREFIX+id);
+  persistSnapshot();
+}
+
+function makeId(sourceName){
+  return 'quiz-'+String(sourceName||'file').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'-'+Date.now().toString(36);
+}
+
+function upsertImported(parsed){
+  var idx=readIndex();
+  var existing=idx.find(function(item){
+    return !item.builtin&&item.sourceName===parsed.sourceName&&item.title===parsed.title;
+  });
+  var pack={
+    id:existing?existing.id:makeId(parsed.sourceName),
+    title:parsed.title,
+    subtitle:parsed.subtitle,
+    sourceName:parsed.sourceName,
+    sourceType:parsed.sourceType,
+    builtin:false,
+    importedAt:Date.now(),
+    questions:parsed.questions
+  };
+  try{
+    savePack(pack);
+    return {ok:true,pack:pack};
+  }catch(e){
+    return {ok:false,error:'Storage is full. Remove a quiz and try again.'};
+  }
+}
+
+function fingerprint(pack){
+  return (pack.title||'')+'|'+(pack.questions&&pack.questions[0]?pack.questions[0].question:'')+'|'+pack.questions.length;
+}
+
+function pushSkipped(name,reason){
+  var key=String(name||'File').toLowerCase();
+  for(var i=0;i<lastScan.skipped.length;i++){
+    if(String(lastScan.skipped[i].name||'').toLowerCase()===key)return;
+  }
+  lastScan.skipped.push({name:name||'File',reason:reason||'Skipped'});
+}
+
+function collectLibrary(extraPacks,scanLoose){
+  var packs=[];
+  var seen={};
+  var builtinFp=fingerprint(builtinPack());
+  var technoFp=fingerprint(technoImportedPack());
+  var prefs=getPrefs();
+  function add(pack,persist,force){
+    if(!pack||!pack.questions||!pack.questions.length)return;
+    var fp=fingerprint(pack);
+    if(!prefs.sampleVisible&&fp===builtinFp)return;
+    if(!prefs.technoVisible&&fp===technoFp)return;
+    if(!force&&isDeletedPack(pack))return;
+    if(seen[fp])return;
+    seen[fp]=true;
+    if(!pack.id)pack.id=pack.builtin?BUILTIN_ID:makeId(pack.sourceName);
+    if(persist&&!pack.builtin&&pack.id!==IMPORTED_TECHNO_ID)upsertImported(pack);
+    packs.push(pack);
+  }
+  if(prefs.sampleVisible)add(builtinPack(),false,true);
+  if(prefs.technoVisible)add(technoImportedPack(),false,true);
+  (extraPacks||[]).forEach(function(p){add(p,false,true);});
+  readIndex().forEach(function(meta){
+    if(!meta||meta.id===BUILTIN_ID||meta.id===OLD_BUILTIN_ID||meta.id===IMPORTED_TECHNO_ID)return;
+    if(prefs.deletedIds.indexOf(meta.id)!==-1)return;
+    var pack=loadPack(meta.id);
+    if(pack)add(pack,false,false);
+    else pushSkipped(meta.sourceName||meta.title,'Saved quiz is no longer valid');
+  });
+  if(scanLoose){
+    var storageKeys=[];
+    for(var i=0;i<localStorage.length;i++)storageKeys.push(localStorage.key(i));
+    storageKeys.forEach(function(key){
+      if(!key||key===STORAGE_INDEX||key.indexOf(STORAGE_PREFIX)===0)return;
+      if(key.indexOf('quizzer.')===0)return;
+      if(!looksLikeQuizFile(key)&&!/quiz|reviewer|questions/i.test(key))return;
+      var parsed=parseQuizContent(localStorage.getItem(key),key);
+      if(parsed){
+        parsed.id=makeId(key);
+        add(parsed,true,false);
+      }else if(looksLikeQuizFile(key)){
+        pushSkipped(key,'Format did not match');
+      }
+    });
+  }
+  packs.sort(function(a,b){
+    if(a.builtin&&!b.builtin)return -1;
+    if(!a.builtin&&b.builtin)return 1;
+    return (b.importedAt||0)-(a.importedAt||0);
+  });
+  return packs;
+}
+
+function updateScanStatus(){
+  var title=document.getElementById('scan-title');
+  var detail=document.getElementById('scan-detail');
+  var skip=document.getElementById('skip-list');
+  if(!title||!detail||!skip)return;
+  var n=library.length;
+  title.textContent=n?(n+' matching quiz'+(n===1?'':'zes')+' found'):'No matching quizzes yet';
+  detail.textContent=n
+    ?'Only files with the current question format are listed.'
+    :'Import a .json, .txt, or .md quiz, or scan a folder.';
+  skip.innerHTML='';
+  lastScan.skipped.forEach(function(item){
+    var d=document.createElement('div');
+    d.className='skip-item';
+    d.textContent=(item.name||'File')+' — '+(item.reason||'Skipped');
+    skip.appendChild(d);
+  });
+  updateSettingsToggles();
+}
+
+function recoverOrphanPacks(){
+  var idx=readIndex();
+  var known={};
+  var prefs=getPrefs();
+  idx.forEach(function(item){if(item&&item.id)known[item.id]=true;});
+  var changed=false;
+  try{
+    for(var i=0;i<localStorage.length;i++){
+      var k=localStorage.key(i);
+      if(!k||k.indexOf(STORAGE_PREFIX)!==0)continue;
+      var id=k.slice(STORAGE_PREFIX.length);
+      if(!id||known[id]||id===BUILTIN_ID||id===OLD_BUILTIN_ID||id===IMPORTED_TECHNO_ID)continue;
+      if(prefs.deletedIds.indexOf(id)!==-1)continue;
+      var pack=loadPack(id);
+      if(!pack||isDeletedPack(pack))continue;
+      idx.unshift(packMeta(pack));
+      known[id]=true;
+      changed=true;
+    }
+  }catch(e){}
+  if(changed)writeIndex(idx);
+}
+function restoreLibrary(){
+  recoverOrphanPacks();
+  lastScan.skipped=[];
+  library=collectLibrary([],false);
+  lastScan.matched=library.length;
+  updateScanStatus();
+  renderPicker();
+  persistSnapshot();
+  return library;
+}
+function scanAllSources(){
+  lastScan.skipped=[];
+  library=collectLibrary([],true);
+  lastScan.matched=library.length;
+  updateScanStatus();
+  renderPicker();
+  persistSnapshot();
+  return library;
+}
+
+async function ingestFiles(files){
+  lastScan.skipped=[];
+  var extra=[];
+  var list=Array.prototype.slice.call(files||[]);
+  for(var i=0;i<list.length;i++){
+    var file=list[i];
+    var name=file.name||'imported.json';
+    if(!looksLikeQuizFile(name)){
+      pushSkipped(name,'Not a .json, .txt, or .md file');
+      continue;
+    }
+    var text='';
+    try{text=await file.text();}catch(e){
+      pushSkipped(name,'Could not read file');
+      continue;
+    }
+    var parsed=parseQuizContent(text,name);
+    if(!parsed){
+      pushSkipped(name,'Format did not match');
+      continue;
+    }
+    var saved=upsertImported(parsed);
+    if(!saved.ok){
+      pushSkipped(name,saved.error);
+      continue;
+    }
+    extra.push(saved.pack);
+    rememberImported(saved.pack);
+  }
+  library=collectLibrary(extra,false);
+  lastScan.matched=library.length;
+  updateScanStatus();
+  renderPicker();
+  persistSnapshot();
+}
+
+function pickFiles(){
+  document.getElementById('file-input').click();
+}
+document.getElementById('file-input').addEventListener('change',function(e){
+  ingestFiles(e.target.files).then(function(){e.target.value='';});
+});
+
+async function pickFolder(){
+  if(!window.showDirectoryPicker){
+    lastScan.skipped=[];
+    pushSkipped('Folder scan','This browser cannot open a folder. Import files instead.');
+    updateScanStatus();
+    pickFiles();
+    return;
+  }
+  try{
+    var dir=await window.showDirectoryPicker();
+    var files=[];
+    for await (var entry of dir.values()){
+      if(entry.kind!=='file'||!looksLikeQuizFile(entry.name))continue;
+      files.push(await entry.getFile());
+    }
+    if(!files.length){
+      lastScan.skipped=[];
+      pushSkipped(dir.name||'Folder','No .json, .txt, or .md files found');
+      updateScanStatus();
+      return;
+    }
+    await ingestFiles(files);
+  }catch(e){
+    if(e&&e.name==='AbortError')return;
+    lastScan.skipped=[];
+    pushSkipped('Folder','Could not scan this folder');
+    updateScanStatus();
+  }
+}
+
+function renderPicker(){
+  var list=document.getElementById('picker-list');
+  list.innerHTML='';
+  if(!library.length){
+    lastScan.skipped=[];
+    library=collectLibrary([]);
+  }
+  if(!library.length){
+    var empty=document.createElement('div');
+    empty.className='empty-card';
+    empty.textContent='No matching quizzes yet. Tap + to import a .json, .txt, or .md file.';
+    list.appendChild(empty);
+    return;
+  }
+  library.forEach(function(pack){
+    var card=document.createElement('div');
+    card.className='quiz-card';
+    var top=document.createElement('div');
+    top.className='quiz-card-top';
+    var heading=document.createElement('div');
+    var h=document.createElement('h3');
+    h.textContent=pack.title;
+    var file=document.createElement('div');
+    file.className='quiz-file';
+    file.textContent=(pack.builtin?'Built-in':pack.sourceName)+' · '+(pack.sourceType||'json').toUpperCase()+' · '+pack.questions.length+' questions';
+    heading.appendChild(h);
+    heading.appendChild(file);
+    top.appendChild(heading);
+    card.appendChild(top);
+    if(pack.subtitle){
+      var sub=document.createElement('p');
+      sub.style.color='var(--muted)';
+      sub.style.fontSize='clamp(11px,2.8vw,13px)';
+      sub.style.lineHeight='1.4';
+      sub.textContent=pack.subtitle;
+      card.appendChild(sub);
+    }
+    var tags=document.createElement('div');
+    tags.className='start-types';
+    tags.style.justifyContent='flex-start';
+    uniqueTypes(pack.questions).slice(0,4).forEach(function(t){
+      var span=document.createElement('span');
+      span.className='tag';
+      span.textContent=t;
+      tags.appendChild(span);
+    });
+    card.appendChild(tags);
+    var actions=document.createElement('div');
+    actions.className='quiz-card-actions';
+    var open=document.createElement('button');
+    open.className='btn btn-primary';
+    open.type='button';
+    open.textContent='Open Quiz';
+    open.onclick=function(){openPack(pack.id);};
+    actions.appendChild(open);
+    var del=document.createElement('button');
+    del.className='icon-btn danger';
+    del.type='button';
+    del.title='Remove from library';
+    del.setAttribute('aria-label','Remove from library');
+    del.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>';
+    del.onclick=function(){
+      var msg=isBundledPack(pack)
+        ?'Hide "'+pack.title+'" from the library? You can turn it back on in Settings.'
+        :'Remove "'+pack.title+'" from this device library?';
+      showConfirm('Remove Quiz?',msg,function(){
+        deletePack(pack.id);
+        restoreLibrary();
+        updateSettingsToggles();
+      });
+    };
+    actions.appendChild(del);
+    card.appendChild(actions);
+    list.appendChild(card);
+  });
+}
+
+function fillTypes(el,types){
+  el.innerHTML='';
+  types.forEach(function(t){
+    var span=document.createElement('span');
+    span.className='tag';
+    span.textContent=t;
+    el.appendChild(span);
+  });
+}
+
+function openPack(id){
+  var pack=library.find(function(p){return p.id===id;})||loadPack(id);
+  if(!pack){
+    restoreLibrary();
+    pack=library.find(function(p){return p.id===id;});
+  }
+  if(!pack)return;
+  activePack=pack;
+  ALL_SOURCE=cloneQuestions(pack.questions);
+  QUESTIONS=ALL_SOURCE.slice();
+  TOTAL=QUESTIONS.length;
+  cur=0;answers={};answered=new Set();score=0;
+  document.getElementById('pack-title').textContent=pack.title;
+  document.getElementById('pack-sub').textContent=pack.subtitle||'';
+  document.getElementById('pack-meta').textContent=TOTAL+' Questions · Instant Feedback';
+  document.getElementById('quiz-brand').textContent='Quizzer';
+  document.getElementById('quiz-pack-title').textContent=pack.title||'Quiz';
+  var fileLabel=pack.builtin?'Built-in reviewer':(pack.sourceName||'Imported quiz');
+  document.getElementById('quiz-pack-file').textContent=fileLabel+(pack.sourceType?' · '+String(pack.sourceType).toUpperCase():'');
+  fillTypes(document.getElementById('pack-types'),uniqueTypes(pack.questions));
+  document.getElementById('score-total').textContent=TOTAL;
+  showScreen('start-screen');
+}
+
 function resetQuizProgress(){
   cur=0;answers={};answered=new Set();score=0;
   document.getElementById('results-screen').classList.remove('active');
@@ -247,6 +1347,15 @@ function askRefreshQuiz(){
   showConfirm('Restart Quiz?','Are you sure you want to refresh and start again?',function(){
     resetQuizProgress();
   });
+}
+function askLeaveQuiz(){
+  if(answered.size){
+    showConfirm('Leave Quiz?','Go back to the quiz library? Progress on this attempt will be lost.',function(){
+      showPicker();
+    });
+  }else{
+    showPicker();
+  }
 }
 function shuffleArray(arr){
   var a=arr.slice();
@@ -269,7 +1378,7 @@ function startQuiz(){
   renderQ();
 }
 function restartQuiz(){
-  QUESTIONS=ALL_QUESTIONS.slice();
+  QUESTIONS=ALL_SOURCE.slice();
   resetQuizProgress();
 }
 function renderQ(){
@@ -286,7 +1395,14 @@ function renderQ(){
   q.choices.forEach(function(c,i){
     var d=document.createElement('div');
     d.className='choice';
-    d.innerHTML='<span class="choice-letter">'+LETTERS[i]+'</span><span class="choice-text">'+c+'</span>';
+    var letter=document.createElement('span');
+    letter.className='choice-letter';
+    letter.textContent=LETTERS[i]||String(i+1);
+    var text=document.createElement('span');
+    text.className='choice-text';
+    text.textContent=c;
+    d.appendChild(letter);
+    d.appendChild(text);
     if(answered.has(cur)){
       d.classList.add('locked');
       if(i===q.correct)d.classList.add('reveal-correct');
@@ -309,6 +1425,15 @@ function selectAnswer(idx){
   if(idx===q.correct)score++;
   renderQ();
 }
+function addFeedbackLine(parent,label,text,isItem){
+  var wrap=document.createElement('div');
+  if(isItem)wrap.className='feedback-item';
+  var strong=document.createElement('strong');
+  strong.textContent=label;
+  wrap.appendChild(strong);
+  wrap.appendChild(document.createTextNode(' '+text));
+  parent.appendChild(wrap);
+}
 function showFeedback(i){
   var q=QUESTIONS[i];
   var fb=document.getElementById('feedback');
@@ -316,20 +1441,21 @@ function showFeedback(i){
   var body=document.getElementById('fb-body');
   var picked=answers[i];
   var correct=q.correct;
+  var correctLetter=LETTERS[correct]||String(correct+1);
   if(picked===correct){
-    title.textContent='Correct! '+LETTERS[correct];
+    title.textContent='Correct! '+correctLetter;
     title.className='feedback-title';
   }else{
-    title.textContent='Incorrect — Correct: '+LETTERS[correct];
+    title.textContent='Incorrect — Correct: '+correctLetter;
     title.className='feedback-title wrong-t';
   }
-  var html='<div><strong>Why '+LETTERS[correct]+' is correct:</strong> '+q.explanations[String(correct)]+'</div>';
-  LETTERS.forEach(function(l,j){
-    if(j!==correct){
-      html+='<div class="feedback-item"><strong>Why '+l+' is wrong:</strong> '+q.explanations[String(j)]+'</div>';
-    }
+  body.innerHTML='';
+  addFeedbackLine(body,'Why '+correctLetter+' is correct:',q.explanations[String(correct)]||'No explanation provided.',false);
+  q.choices.forEach(function(_c,j){
+    if(j===correct)return;
+    var letter=LETTERS[j]||String(j+1);
+    addFeedbackLine(body,'Why '+letter+' is wrong:',q.explanations[String(j)]||'No explanation provided.',true);
   });
-  body.innerHTML=html;
   fb.classList.add('show');
 }
 function nextQ(){
@@ -348,10 +1474,10 @@ function showResults(){
   document.getElementById('score-ring').style.setProperty('--pct',Math.round(score/TOTAL*100));
   var pct=Math.round(score/TOTAL*100);
   var msg='',detail='';
-  if(pct>=90){msg='Outstanding!';detail='You have mastered technopreneurship fundamentals.';}
-  else if(pct>=75){msg='Great job!';detail='Strong understanding — review missed topics.';}
-  else if(pct>=60){msg='Good effort!';detail='Solid base — revisit Problem ID and Customer Segments.';}
-  else{msg='Keep studying!';detail='Review macro view, 5 Whys, JTBD, and personas.';}
+  if(pct>=90){msg='Outstanding!';detail='You have a strong command of this reviewer.';}
+  else if(pct>=75){msg='Great job!';detail='Solid understanding — review the items you missed.';}
+  else if(pct>=60){msg='Good effort!';detail='You have a base — revisit the weaker topics.';}
+  else{msg='Keep studying!';detail='Go through the explanations and try this quiz again.';}
   document.getElementById('result-msg').textContent=msg;
   document.getElementById('result-detail').textContent=detail+' Score: '+score+'/'+TOTAL+' ('+pct+'%)';
 }
@@ -395,6 +1521,8 @@ function isInstalled(){
 function hideInstallUI(){
   var ui=document.getElementById('install-ui');
   if(ui)ui.classList.add('hidden');
+  var libBtn=document.getElementById('lib-install-btn');
+  if(libBtn)libBtn.style.display='none';
 }
 function closeInstallModal(){
   document.getElementById('install-overlay').classList.remove('show');
@@ -439,9 +1567,9 @@ function handleInstallClick(){
 var pageUrl=location.href.split('#')[0];
 var manifest={
   id:'quizzer-pwa',
-  name:'Quizzer - Technopreneurship Quiz',
+  name:'Quizzer',
   short_name:'Quizzer',
-  description:'122-item interactive technopreneurship prelim review quiz',
+  description:'Reusable reviewer quiz library',
   start_url:pageUrl,
   scope:pageUrl.substring(0,pageUrl.lastIndexOf('/')+1)||pageUrl,
   display:'standalone',
@@ -461,10 +1589,22 @@ manifestLink.href=URL.createObjectURL(manifestBlob);
 document.head.appendChild(manifestLink);
 
 if('serviceWorker' in navigator&&location.protocol!=='file:'){
-  var swUrl=pageUrl;
-  var swCode='const CACHE="quizzer-v3";const URL="'+swUrl.replace(/"/g,'\\"')+'";self.addEventListener("install",function(e){self.skipWaiting();e.waitUntil(caches.open(CACHE).then(function(c){return c.add(URL).catch(function(){});}));});self.addEventListener("activate",function(e){e.waitUntil(self.clients.claim());});self.addEventListener("fetch",function(e){if(e.request.mode==="navigate"){e.respondWith(fetch(e.request).catch(function(){return caches.match(URL);}));}});';
-  var swBlob=new Blob([swCode],{type:'application/javascript'});
-  navigator.serviceWorker.register(URL.createObjectURL(swBlob),{scope:'./'}).catch(function(){});
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    return Promise.all(regs.map(function(reg){
+      var url=reg.active&&reg.active.scriptURL||'';
+      if(url.indexOf('blob:')===0)return reg.unregister();
+    }));
+  }).then(function(){
+    return navigator.serviceWorker.register('./sw.js');
+  }).then(function(reg){
+    var urls=[location.href.split('#')[0],'./','./index.html','./sample-quiz.json'];
+    var send=function(){
+      var worker=reg.active||navigator.serviceWorker.controller;
+      if(worker)worker.postMessage({type:'CACHE_URLS',urls:urls});
+    };
+    if(reg.active)send();
+    navigator.serviceWorker.ready.then(send);
+  }).catch(function(){});
 }
 
 if(isInstalled()){hideInstallUI();}
@@ -481,6 +1621,41 @@ window.addEventListener('appinstalled',function(){
   hideInstallUI();
   closeInstallModal();
 });
+
+(function setupDropZone(){
+  var zone=document.getElementById('drop-zone');
+  ['dragenter','dragover'].forEach(function(ev){
+    zone.addEventListener(ev,function(e){e.preventDefault();zone.classList.add('drag');});
+  });
+  ['dragleave','drop'].forEach(function(ev){
+    zone.addEventListener(ev,function(e){e.preventDefault();zone.classList.remove('drag');});
+  });
+  zone.addEventListener('drop',function(e){
+    var files=e.dataTransfer&&e.dataTransfer.files;
+    if(files&&files.length)ingestFiles(files);
+  });
+  if(!window.showDirectoryPicker){
+    var folderBtn=document.getElementById('folder-btn');
+    if(folderBtn){
+      folderBtn.textContent='Folder scan unavailable';
+      folderBtn.disabled=true;
+    }
+  }
+})();
+
+window.addEventListener('pagehide',persistSnapshot);
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='hidden')persistSnapshot();
+});
+hydrateSnapshot().then(function(){
+  prefsCache=null;
+  writePrefs(getPrefs());
+  seedImportedTechno();
+  restoreLibrary();
+  showPicker();
+});
+var versionEl=document.getElementById('app-version');
+if(versionEl)versionEl.textContent='Version '+APP_VERSION;
 </script>
 </body>
 </html>

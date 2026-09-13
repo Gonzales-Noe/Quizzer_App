@@ -1,0 +1,63 @@
+{
+  "title": "Sample Mini Reviewer",
+  "subtitle": "Tiny 3-question pack to test the reusable Quizzer library",
+  "questions": [
+    {
+      "id": 1,
+      "type": "Definition",
+      "topic": "Sample",
+      "question": "What does a reusable Quizzer load?",
+      "choices": [
+        "Any matching JSON, TXT, or MD quiz in the library format",
+        "Only PDFs",
+        "Only the first hardcoded quiz forever",
+        "Random websites"
+      ],
+      "correct": 0,
+      "explanations": {
+        "0": "Quizzer accepts the same question shape used by this reviewer, from .json, .txt, or .md files.",
+        "1": "PDFs are not a supported quiz format here.",
+        "2": "The built-in quiz is one pack; you can open others from the library.",
+        "3": "Quizzes come from local storage and imported files, not arbitrary websites."
+      }
+    },
+    {
+      "id": 2,
+      "type": "Application",
+      "topic": "Sample",
+      "question": "A file has questions but no choices array. What should Quizzer do?",
+      "choices": [
+        "Open it anyway",
+        "Hide it because the format does not match",
+        "Convert it into a PDF",
+        "Install it as an app"
+      ],
+      "correct": 1,
+      "explanations": {
+        "0": "Missing choices means it is not a valid reviewer question.",
+        "1": "Only files with question, choices, and a correct index are listed.",
+        "2": "Quizzer does not convert files to PDF.",
+        "3": "Install is unrelated to format validation."
+      }
+    },
+    {
+      "id": 3,
+      "type": "Situational",
+      "topic": "Sample",
+      "question": "You finished one reviewer and want a different subject. What do you do?",
+      "choices": [
+        "Refresh the whole browser profile",
+        "Edit the HTML by hand each time",
+        "Go back to the picker and open another quiz",
+        "Delete local storage"
+      ],
+      "correct": 2,
+      "explanations": {
+        "0": "You do not need to reset the browser.",
+        "1": "The library is meant to be reused without rewriting the app.",
+        "2": "Use Quizzes / Other Quiz to return to the picker and switch packs.",
+        "3": "Removing storage would delete imported quizzes."
+      }
+    }
+  ]
+}
